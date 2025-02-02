@@ -39,6 +39,7 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/todos/{todo}', [TodoController::class, 'update'])->name('todos.update');
     Route::delete('/todos/{todo}', [TodoController::class, 'destroy'])->name('todos.destroy');
     Route::post('/todos/{todo}/toggle', [TodoController::class, 'toggleStatus'])->name('todos.toggle');
+    Route::post('/todos/{todo}/update-status', [TodoController::class, 'updateStatus'])->name('todos.update-status');
     Route::resource('tags', TagController::class)->except(['show']);
     Route::get('tags/{tag}/todos', [TagController::class, 'todos'])->name('tags.todos');
 });

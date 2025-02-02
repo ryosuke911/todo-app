@@ -100,4 +100,17 @@ class TodoController extends Controller
         $this->todoService->toggleTodoStatus($todo);
         return response()->json(['status' => $todo->status]);
     }
+
+    public function updateStatus(Request $request, Todo $todo)
+    {
+        $this->authorize('update', $todo);
+
+        $validated = $request->validate([
+            'status' => 'required|string|in:pending,in_progress,completed'
+        ]);
+
+        $todo->update(['status' => $validated['status']]);
+
+        return response()->json(['status' => $todo->status]);
+    }
 }

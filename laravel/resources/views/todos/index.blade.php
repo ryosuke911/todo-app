@@ -43,17 +43,54 @@
                             @endif
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <form action="{{ route('todos.toggle', $todo) }}" method="POST" class="inline">
-                                @csrf
-                                <button type="submit" class="px-3 py-1 rounded text-sm font-semibold
-                                    @if($todo->status === 'completed')
-                                        bg-green-100 text-green-800 hover:bg-green-200
-                                    @else
-                                        bg-yellow-100 text-yellow-800 hover:bg-yellow-200
-                                    @endif">
-                                    {{ $todo->status === 'completed' ? '完了' : '進行中' }}
+                            <div class="relative" x-data="{ open: false }">
+                                <button
+                                    @click="open = !open"
+                                    type="button"
+                                    data-todo-id="{{ $todo->id }}"
+                                    class="status-button px-3 py-1 rounded text-sm font-semibold cursor-pointer inline-flex items-center justify-between w-32
+                                        @if($todo->status === 'completed')
+                                            bg-green-100 text-green-800 hover:bg-green-200
+                                        @elseif($todo->status === 'in_progress')
+                                            bg-yellow-100 text-yellow-800 hover:bg-yellow-200
+                                        @else
+                                            bg-gray-100 text-gray-800 hover:bg-gray-200
+                                        @endif">
+                                    <span>{{ $todo->status === 'completed' ? '完了' : ($todo->status === 'in_progress' ? '進行中' : '未対応') }}</span>
+                                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                    </svg>
                                 </button>
-                            </form>
+                                <div
+                                    x-show="open"
+                                    x-cloak
+                                    @click.away="open = false"
+                                    class="absolute z-50 mt-1 w-32 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+                                    <div class="py-1" role="menu" aria-orientation="vertical">
+                                        <button
+                                            @click="open = false"
+                                            onclick="updateStatus({{ $todo->id }}, 'pending')"
+                                            class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                            role="menuitem">
+                                            未対応
+                                        </button>
+                                        <button
+                                            @click="open = false"
+                                            onclick="updateStatus({{ $todo->id }}, 'in_progress')"
+                                            class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                            role="menuitem">
+                                            進行中
+                                        </button>
+                                        <button
+                                            @click="open = false"
+                                            onclick="updateStatus({{ $todo->id }}, 'completed')"
+                                            class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                            role="menuitem">
+                                            完了
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                         </td>
                         <td class="px-6 py-4">
                             @foreach($todo->tags as $tag)
@@ -77,4 +114,54 @@
         </div>
     </div>
 </div>
+
+@push('scripts')
+<script>
+    function updateStatus(todoId, newStatus) {
+        fetch(`/todos/${todoId}/update-status`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ status: newStatus })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            const button = document.querySelector(`button[data-todo-id="${todoId}"]`);
+            const statusText = button.querySelector('span');
+            
+            // Remove all existing status classes
+            button.classList.remove(
+                'bg-green-100', 'text-green-800', 'hover:bg-green-200',
+                'bg-yellow-100', 'text-yellow-800', 'hover:bg-yellow-200',
+                'bg-gray-100', 'text-gray-800', 'hover:bg-gray-200'
+            );
+            
+            // Add new status classes
+            if (data.status === 'completed') {
+                button.classList.add('bg-green-100', 'text-green-800', 'hover:bg-green-200');
+                statusText.textContent = '完了';
+            } else if (data.status === 'in_progress') {
+                button.classList.add('bg-yellow-100', 'text-yellow-800', 'hover:bg-yellow-200');
+                statusText.textContent = '進行中';
+            } else {
+                button.classList.add('bg-gray-100', 'text-gray-800', 'hover:bg-gray-200');
+                statusText.textContent = '未対応';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('ステータスの更新に失敗しました。');
+        });
+    }
+</script>
+@endpush
+
 @endsection
