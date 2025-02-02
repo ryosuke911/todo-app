@@ -15,14 +15,21 @@ class DashboardService
      */
     public function getTaskStatistics(int $userId): array
     {
-        $todos = Todo::where('user_id', $userId);
-        
         return [
-            'total' => $todos->count(),
-            'in_progress' => $todos->where('status', 'in_progress')->count(),
-            'completed' => $todos->where('status', 'completed')->count(),
-            'overdue' => $todos->where('status', 'in_progress')
+            'total' => Todo::where('user_id', $userId)->count(),
+            'in_progress' => Todo::where('user_id', $userId)
+                ->where('status', 'in_progress')
+                ->count(),
+            'completed' => Todo::where('user_id', $userId)
+                ->where('status', 'completed')
+                ->count(),
+            'overdue' => Todo::where('user_id', $userId)
                 ->where('deadline', '<', Carbon::now())
+                ->where(function ($query) {
+                    $query->where('status', 'in_progress')
+                        ->orWhereNotIn('status', ['completed', 'in_progress'])
+                        ->orWhereNull('status');
+                })
                 ->count(),
         ];
     }
@@ -36,9 +43,12 @@ class DashboardService
         
         $inProgress = $todos->where('status', 'in_progress')->count();
         $completed = $todos->where('status', 'completed')->count();
-        $overdue = $todos->where('status', 'in_progress')
-            ->where('deadline', '<', Carbon::now())
-            ->count();
+        $overdue = $todos->filter(function ($todo) {
+            return ($todo->status === 'in_progress' || 
+                    $todo->status !== 'completed' && $todo->status !== 'in_progress' || 
+                    $todo->status === null) && 
+                $todo->deadline < Carbon::now();
+        })->count();
 
         return [
             'labels' => ['進行中', '完了', '期限超過'],
