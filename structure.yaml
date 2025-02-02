@@ -172,6 +172,37 @@ laravel:
           - app/Models/User.php
           - app/Models/Tag.php
 
+    View:
+      Components:
+        Sidebar.php:
+          content: |-
+            サイドバーコンポーネントのロジック
+            - サイドバーの状態管理
+            - アクティブメニューの判定
+            - コンポーネントの初期化処理
+          dependency:
+            - resources/views/components/sidebar.blade.php
+
+    Providers:
+      AppServiceProvider.php:
+        content: |-
+          アプリケーションサービスプロバイダー
+          - アプリケーション全体の設定
+          - ビューコンポーザーの登録
+          - カスタムバリデーションルールの登録
+          - グローバル変数の設定
+        dependency: []
+
+      AuthServiceProvider.php:
+        content: |-
+          認証サービスプロバイダー
+          - 認証ポリシーの登録
+          - ゲートの定義
+          - 認証関連の設定
+        dependency:
+          - app/Policies/TodoPolicy.php
+          - app/Policies/TagPolicy.php
+
   resources:
     views:
       auth:
@@ -296,6 +327,8 @@ laravel:
               - タイトル
               - 数値表示
               - アイコン表示
+              - アニメーション効果
+              - カラーバリエーション
               スタイリング: Tailwind CSS
             dependency: []
 
@@ -304,7 +337,11 @@ laravel:
               タスク進捗状況グラフコンポーネント
               - Chart.jsによる円グラフ
               - 進行中/完了/期限超過の表示
+              - インタラクティブな凡例
+              - アニメーション効果
+              - レスポンシブ対応
               スタイリング: Tailwind CSS
+              JavaScript: Chart.js
             dependency: []
 
           tag-chart.blade.php:
@@ -312,7 +349,11 @@ laravel:
               タグ別タスク数グラフコンポーネント
               - Chart.jsによる棒グラフ
               - タグごとのタスク数表示
+              - カラーコーディング
+              - ホバー効果
+              - データラベル表示
               スタイリング: Tailwind CSS
+              JavaScript: Chart.js
             dependency: []
 
           timeline-chart.blade.php:
@@ -320,8 +361,23 @@ laravel:
               日別タスク作成数グラフコンポーネント
               - Chart.jsによる折れ線グラフ
               - 日付ごとのタスク作成数表示
+              - ズーム機能
+              - 期間選択機能
+              - トレンドライン表示
               スタイリング: Tailwind CSS
+              JavaScript: Chart.js
             dependency: []
+
+          sidebar.blade.php:
+            content: |-
+              サイドバーコンポーネントのビュー
+              - ナビゲーションメニュー
+              - アクティブ状態の表示
+              - レスポンシブ対応
+              - アイコン表示
+              スタイリング: Tailwind CSS
+            dependency:
+              - app/View/Components/Sidebar.php
 
       layouts:
         app.blade.php:
@@ -330,6 +386,15 @@ laravel:
             - サイドバーナビゲーション
             - メインコンテンツエリア
             - レスポンシブ対応
+            スタイリング: Tailwind CSS
+          dependency: []
+
+        empty.blade.php:
+          content: |-
+            最小限のレイアウトテンプレート
+            - 認証画面用の簡素なレイアウト
+            - メタ情報
+            - 基本スタイル
             スタイリング: Tailwind CSS
           dependency: []
 
@@ -394,3 +459,13 @@ laravel:
           - グラフのカスタマイズ
           - レスポンシブ調整
         dependency: []
+
+  config:
+    cache.php:
+      content: |-
+        キャッシュ設定
+        - デフォルトキャッシュドライバー
+        - キャッシュストアの設定
+        - キャッシュプレフィックス
+        - キャッシュTTLの設定
+      dependency: []
