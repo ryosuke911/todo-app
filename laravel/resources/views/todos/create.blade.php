@@ -40,6 +40,20 @@
                     @enderror
                 </div>
 
+                <!-- ステータス -->
+                <div>
+                    <label for="status" class="block text-sm font-medium text-gray-700">ステータス</label>
+                    <select name="status" id="status" required
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        <option value="pending" {{ old('status') === 'pending' ? 'selected' : '' }}>未対応</option>
+                        <option value="in_progress" {{ old('status') === 'in_progress' ? 'selected' : '' }}>進行中</option>
+                        <option value="completed" {{ old('status') === 'completed' ? 'selected' : '' }}>完了</option>
+                    </select>
+                    @error('status')
+                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
                 <!-- タグ -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700">タグ</label>
