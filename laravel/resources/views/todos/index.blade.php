@@ -17,6 +17,41 @@
             </a>
         </div>
 
+        <!-- フィルター -->
+        <div class="mb-6">
+            <form action="{{ route('todos.index') }}" method="GET" class="flex flex-wrap gap-4">
+                <select name="status" class="form-select rounded-md shadow-sm border-gray-300">
+                    <option value="">全てのステータス</option>
+                    <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>未着手</option>
+                    <option value="in_progress" {{ request('status') == 'in_progress' ? 'selected' : '' }}>進行中</option>
+                    <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>完了</option>
+                </select>
+
+                <select name="tag_id" class="form-select rounded-md shadow-sm border-gray-300">
+                    <option value="">全てのタグ</option>
+                    @foreach($tags as $tag)
+                        <option value="{{ $tag->id }}" {{ request('tag_id') == $tag->id ? 'selected' : '' }}>
+                            {{ $tag->name }} ({{ $tag->todos_count }})
+                        </option>
+                    @endforeach
+                </select>
+
+                <input type="text" name="search" value="{{ request('search') }}" 
+                    placeholder="タイトルまたは説明で検索" 
+                    class="form-input rounded-md shadow-sm border-gray-300">
+
+                <button type="submit" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">
+                    フィルター
+                </button>
+
+                @if(request('status') || request('tag_id') || request('search'))
+                    <a href="{{ route('todos.index') }}" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">
+                        リセット
+                    </a>
+                @endif
+            </form>
+        </div>
+
         <!-- タスク一覧 -->
         <div class="overflow-x-auto">
             <table class="min-w-full">
