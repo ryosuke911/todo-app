@@ -33,9 +33,7 @@
                         @foreach($tags as $tag)
                             <tr>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <a href="{{ route('tags.todos', $tag) }}" class="text-blue-600 hover:text-blue-800">
-                                        {{ $tag->name }}
-                                    </a>
+                                    {{ $tag->name }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     {{ $tag->todos_count }}
