@@ -1,5 +1,5 @@
 <!-- サイドバー -->
-<aside class="w-64 bg-white shadow-lg min-h-screen">
+<aside class="w-64 bg-white shadow-lg h-screen fixed">
     <div class="flex flex-col h-full">
         <!-- ユーザー情報 -->
         <div class="p-4 border-b">
@@ -41,7 +41,7 @@
         </nav>
 
         <!-- ログアウト -->
-        <div class="p-4 border-t">
+        <div class="p-4 border-t mt-auto">
             <form action="{{ route('logout') }}" method="POST">
                 @csrf
                 <button type="submit" class="w-full px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition duration-200">

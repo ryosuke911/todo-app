@@ -13,26 +13,24 @@
     @yield('styles')
 </head>
 <body class="bg-gray-100">
-    <div class="flex min-h-screen">
-        <!-- サイドバー -->
-        @includeFirst(['components.sidebar', 'layouts.empty'])
+    <!-- サイドバー -->
+    @includeFirst(['components.sidebar', 'layouts.empty'])
 
-        <!-- メインコンテンツ -->
-        <div class="flex-1">
-            <!-- ヘッダー -->
-            <header class="bg-white shadow">
-                <div class="px-8 py-6">
-                    <h1 class="text-2xl font-semibold text-gray-900">
-                        @yield('header')
-                    </h1>
-                </div>
-            </header>
+    <!-- メインコンテンツ -->
+    <div class="ml-64">
+        <!-- ヘッダー -->
+        <header class="bg-white shadow">
+            <div class="px-8 py-6">
+                <h1 class="text-2xl font-semibold text-gray-900">
+                    @yield('header')
+                </h1>
+            </div>
+        </header>
 
-            <!-- メインコンテンツエリア -->
-            <main class="p-8">
-                @yield('content')
-            </main>
-        </div>
+        <!-- メインコンテンツエリア -->
+        <main class="p-8">
+            @yield('content')
+        </main>
     </div>
 
     @stack('scripts')
