@@ -7,49 +7,75 @@
 @section('content')
 <div class="bg-white shadow rounded-lg">
     <div class="p-6">
-        <!-- 新規作成ボタン -->
-        <div class="mb-4">
-            <a href="{{ route('todos.create') }}" class="inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+        <!-- フィルターと新規作成ボタン -->
+        <div class="mb-6 flex justify-between items-center">
+            <form action="{{ route('todos.index') }}" method="GET" class="flex flex-1 gap-4 mr-4">
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                    </div>
+                    <select name="status" class="form-select pl-10 pr-4 py-2 rounded-md shadow-sm border-gray-300 focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                        <option value="">全てのステータス</option>
+                        <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>未着手</option>
+                        <option value="in_progress" {{ request('status') == 'in_progress' ? 'selected' : '' }}>進行中</option>
+                        <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>完了</option>
+                    </select>
+                </div>
+
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                        </svg>
+                    </div>
+                    <select name="tag_id" class="form-select pl-10 pr-4 py-2 rounded-md shadow-sm border-gray-300 focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                        <option value="">全てのタグ</option>
+                        @foreach($tags as $tag)
+                            <option value="{{ $tag->id }}" {{ request('tag_id') == $tag->id ? 'selected' : '' }}>
+                                {{ $tag->name }} ({{ $tag->todos_count }})
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="relative flex-1">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </div>
+                    <input type="text" 
+                        name="search" 
+                        value="{{ request('search') }}" 
+                        placeholder="フリーワード検索" 
+                        class="form-input block w-full pl-10 pr-4 py-2 rounded-md shadow-sm border-gray-300 focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                </div>
+
+                <button type="submit" class="inline-flex items-center px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+                    <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                    </svg>
+                    フィルター
+                </button>
+
+                @if(request('status') || request('tag_id') || request('search'))
+                    <a href="{{ route('todos.index') }}" class="inline-flex items-center px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                        <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                        リセット
+                    </a>
+                @endif
+            </form>
+
+            <a href="{{ route('todos.create') }}" class="inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                 </svg>
                 新規作成
             </a>
-        </div>
-
-        <!-- フィルター -->
-        <div class="mb-6">
-            <form action="{{ route('todos.index') }}" method="GET" class="flex flex-wrap gap-4">
-                <select name="status" class="form-select rounded-md shadow-sm border-gray-300">
-                    <option value="">全てのステータス</option>
-                    <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>未着手</option>
-                    <option value="in_progress" {{ request('status') == 'in_progress' ? 'selected' : '' }}>進行中</option>
-                    <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>完了</option>
-                </select>
-
-                <select name="tag_id" class="form-select rounded-md shadow-sm border-gray-300">
-                    <option value="">全てのタグ</option>
-                    @foreach($tags as $tag)
-                        <option value="{{ $tag->id }}" {{ request('tag_id') == $tag->id ? 'selected' : '' }}>
-                            {{ $tag->name }} ({{ $tag->todos_count }})
-                        </option>
-                    @endforeach
-                </select>
-
-                <input type="text" name="search" value="{{ request('search') }}" 
-                    placeholder="タイトルまたは説明で検索" 
-                    class="form-input rounded-md shadow-sm border-gray-300">
-
-                <button type="submit" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">
-                    フィルター
-                </button>
-
-                @if(request('status') || request('tag_id') || request('search'))
-                    <a href="{{ route('todos.index') }}" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">
-                        リセット
-                    </a>
-                @endif
-            </form>
         </div>
 
         <!-- タスク一覧 -->
