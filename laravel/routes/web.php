@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\TodoController;
 use App\Http\Controllers\TagController;
+use App\Http\Controllers\DashboardController;
 
 // トップページ
 Route::get('/', function () {
@@ -28,6 +29,9 @@ Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('
 
 // ToDo管理のルート（認証必須）
 Route::middleware(['auth'])->group(function () {
+    // ダッシュボード
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
     Route::get('/todos', [TodoController::class, 'index'])->name('todos.index');
     Route::get('/todos/create', [TodoController::class, 'create'])->name('todos.create');
     Route::post('/todos', [TodoController::class, 'store'])->name('todos.store');
