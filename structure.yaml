@@ -1,0 +1,396 @@
+laravel:
+  structure.yaml:
+    content: |-
+      ToDoアプリケーションのプロジェクト構造
+      - Laravel (PHP) ベースのWebアプリケーション
+      - ユーザー認証と ToDo 管理機能
+      - セキュアなパスワード管理
+      - レスポンシブなUI設計（Tailwind CSS）
+      - タグによるTodo管理機能
+    dependency: []
+
+  app:
+    Http:
+      Controllers:
+        AuthController.php:
+          content: |-
+            ユーザー認証関連の処理
+            - ログイン/ログアウト機能
+              - セッション再生成
+              - CSRFトークン再生成
+              - セキュアなログアウト処理
+            - ユーザー登録処理
+            - パスワードリセット機能
+            - セッション管理
+            - バリデーション処理
+          dependency:
+            - app/Services/AuthService.php
+            - app/Models/User.php
+
+        TodoController.php:
+          content: |-
+            ToDo管理の中心的なコントローラ
+            - タスクのCRUD操作
+            - 認可チェック（Policy使用）
+            - ステータス切り替え機能
+            - フィルタリング機能
+            - タグによるフィルタリング機能
+          dependency:
+            - app/Services/TodoService.php
+            - app/Models/Todo.php
+            - app/Models/Tag.php
+            - app/Policies/TodoPolicy.php
+
+        TagController.php:
+          content: |-
+            タグ管理の制御
+            - タグのCRUD操作
+            - タグによるTodoフィルタリング
+            - ユーザー単位でのタグ管理
+          dependency:
+            - app/Models/Tag.php
+            - app/Models/Todo.php
+            - app/Policies/TagPolicy.php
+
+        DashboardController.php:
+          content: |-
+            ダッシュボード表示の制御
+            - タスク統計情報の取得
+            - グラフデータの生成
+            - タグ別統計の取得
+            - 期限切れタスクの取得
+          dependency:
+            - app/Services/DashboardService.php
+            - app/Models/Todo.php
+            - app/Models/Tag.php
+
+      Middleware:
+        AuthenticateUser.php:
+          content: |-
+            ユーザー認証ミドルウェア
+            - ログイン状態の確認
+            - 未認証ユーザーのリダイレクト
+            - APIリクエストの認証処理
+          dependency: []
+
+    Services:
+      AuthService.php:
+        content: |-
+          認証関連のビジネスロジック
+          - ユーザー登録処理
+          - パスワードハッシュ化
+          - パスワードリセット処理
+          - パスワード検証ロジック
+        dependency:
+          - app/Models/User.php
+
+      TodoService.php:
+        content: |-
+          ToDo管理のビジネスロジック
+          - タスク作成/更新/削除
+          - タスク一覧取得（フィルタリング付き）
+          - 期限切れタスクの取得
+          - ステータス管理
+          - ページネーション処理
+        dependency:
+          - app/Models/Todo.php
+
+      DashboardService.php:
+        content: |-
+          ダッシュボード用のビジネスロジック
+          - タスク統計の計算
+          - グラフデータの集計
+          - タグ別統計の集計
+          - 期限切れタスクの集計
+          - 日別タスク作成数の集計
+        dependency:
+          - app/Models/Todo.php
+          - app/Models/Tag.php
+
+    Models:
+      User.php:
+        content: |-
+          ユーザーモデル
+          - ユーザー属性定義
+          - パスワードハッシュ化
+          - リレーション定義（ToDos）
+          - パスワードリセット機能
+          - メール通知機能
+          機能:
+            - Factory対応
+            - Notifiable
+            - CanResetPassword
+        dependency: []
+
+      Todo.php:
+        content: |-
+          Todoモデル
+          - タスク属性定義
+          - スコープ定義（pending, completed, overdue）
+          - バリデーションルール
+          - ユーザーとのリレーション
+          - タグとの多対多リレーション
+          機能:
+            - SoftDeletes
+            - Factory対応
+            - カスタムメソッド（isOverdue, markAsCompleted）
+            - タグ関連のスコープメソッド
+        dependency:
+          - app/Models/User.php
+          - app/Models/Tag.php
+
+      Tag.php:
+        content: |-
+          タグモデル
+          - タグ属性定義（name, user_id）
+          - ユーザーとのリレーション
+          - Todoとの多対多リレーション
+          機能:
+            - Factory対応
+            - バリデーション
+        dependency:
+          - app/Models/User.php
+          - app/Models/Todo.php
+
+    Policies:
+      TodoPolicy.php:
+        content: |-
+          ToDo操作の認可ポリシー
+          - 更新権限チェック
+          - 削除権限チェック
+        dependency:
+          - app/Models/User.php
+          - app/Models/Todo.php
+
+      TagPolicy.php:
+        content: |-
+          タグ操作の認可ポリシー
+          - 作成権限チェック
+          - 更新権限チェック
+          - 削除権限チェック
+        dependency:
+          - app/Models/User.php
+          - app/Models/Tag.php
+
+  resources:
+    views:
+      auth:
+        login.blade.php:
+          content: |-
+            ログイン画面テンプレート
+            - メールアドレス入力
+            - パスワード入力
+            - Remember Me機能
+            - パスワードリセットリンク
+            スタイリング: Tailwind CSS
+          dependency: []
+
+        register.blade.php:
+          content: |-
+            ユーザー登録画面テンプレート
+            - 名前入力
+            - メールアドレス入力
+            - パスワード入力（確認付き）
+            スタイリング: Tailwind CSS
+          dependency: []
+
+        reset-password.blade.php:
+          content: |-
+            パスワードリセット画面
+            - メールアドレス確認
+            - 新パスワード入力
+            - トークン処理
+            スタイリング: Tailwind CSS
+          dependency: []
+
+        forgot-password.blade.php:
+          content: |-
+            パスワードリセットリクエスト画面
+            - メールアドレス入力
+            - リセットメール送信
+            スタイリング: Tailwind CSS
+          dependency: []
+
+      todos:
+        index.blade.php:
+          content: |-
+            ToDo一覧画面
+            - タスク一覧表示
+            - ステータスフィルター
+            - タグフィルター
+            - 新規作成ボタン
+            - 編集/削除機能
+            - ナビゲーションバー
+              - ユーザー名表示
+              - ログアウトボタン
+            スタイリング: Tailwind CSS
+          dependency: []
+
+        create.blade.php:
+          content: |-
+            タスク作成画面
+            - タイトル入力
+            - 詳細入力
+            - 期限設定
+            - ステータス選択
+            - タグ選択（複数選択可能）
+            スタイリング: Tailwind CSS
+          dependency: []
+
+        edit.blade.php:
+          content: |-
+            タスク編集画面
+            - 既存データ表示
+            - 更新フォーム
+            - タグ編集
+            スタイリング: Tailwind CSS
+          dependency: []
+
+      tags:
+        index.blade.php:
+          content: |-
+            タグ一覧・管理画面
+            - タグ一覧表示
+            - 新規作成フォーム
+            - 編集/削除機能
+            スタイリング: Tailwind CSS
+          dependency: []
+
+        create.blade.php:
+          content: |-
+            タグ作成画面
+            - タグ名入力
+            - カラー選択（オプション）
+            スタイリング: Tailwind CSS
+          dependency: []
+
+        edit.blade.php:
+          content: |-
+            タグ編集画面
+            - 既存データ表示
+            - 更新フォーム
+            スタイリング: Tailwind CSS
+          dependency: []
+
+      dashboard:
+        index.blade.php:
+          content: |-
+            ダッシュボード画面
+            - 統計カード表示
+              - 総タスク数
+              - 進行中タスク数
+              - 完了タスク数
+              - 期限超過タスク数
+            - タスク進捗状況グラフ（円グラフ）
+            - タグ別タスク数（棒グラフ）
+            - 今後の締め切りタスク一覧
+            - 日別タスク作成数推移（折れ線グラフ）
+            スタイリング: Tailwind CSS
+            JavaScript: Chart.js
+          dependency: []
+
+        components:
+          stats-card.blade.php:
+            content: |-
+              統計カードコンポーネント
+              - タイトル
+              - 数値表示
+              - アイコン表示
+              スタイリング: Tailwind CSS
+            dependency: []
+
+          progress-chart.blade.php:
+            content: |-
+              タスク進捗状況グラフコンポーネント
+              - Chart.jsによる円グラフ
+              - 進行中/完了/期限超過の表示
+              スタイリング: Tailwind CSS
+            dependency: []
+
+          tag-chart.blade.php:
+            content: |-
+              タグ別タスク数グラフコンポーネント
+              - Chart.jsによる棒グラフ
+              - タグごとのタスク数表示
+              スタイリング: Tailwind CSS
+            dependency: []
+
+          timeline-chart.blade.php:
+            content: |-
+              日別タスク作成数グラフコンポーネント
+              - Chart.jsによる折れ線グラフ
+              - 日付ごとのタスク作成数表示
+              スタイリング: Tailwind CSS
+            dependency: []
+
+      layouts:
+        app.blade.php:
+          content: |-
+            共通レイアウトテンプレート
+            - サイドバーナビゲーション
+            - メインコンテンツエリア
+            - レスポンシブ対応
+            スタイリング: Tailwind CSS
+          dependency: []
+
+  database:
+    migrations:
+      create_users_table.php:
+        content: |-
+          ユーザーテーブル定義
+          - 基本属性（id, name, email, password）
+          - タイムスタンプ
+          - remember_token
+          - email_verified_at
+        dependency: []
+
+      create_todos_table.php:
+        content: |-
+          Todoテーブル定義
+          - タスク属性（title, description, status, deadline）
+          - ユーザーとの関連付け
+          - ソフトデリート対応
+          - タイムスタンプ
+        dependency: []
+
+      create_tags_table.php:
+        content: |-
+          タグテーブル定義
+          - 基本属性（id, name, user_id）
+          - タイムスタンプ
+          - ユーザーとの関連付け
+        dependency: []
+
+      create_todo_tag_table.php:
+        content: |-
+          Todo-Tag中間テーブル定義
+          - 関連キー（todo_id, tag_id）
+          - 複合主キー
+          - 外部キー制約
+        dependency: []
+
+  .env:
+    content: |-
+      アプリケーション環境変数
+      - データベース接続情報
+      - アプリケーションキー
+      - メール設定
+    dependency: []
+
+  public:
+    js:
+      dashboard.js:
+        content: |-
+          ダッシュボード用JavaScript
+          - Chart.jsの初期化
+          - グラフデータのバインディング
+          - レスポンシブ対応
+        dependency: []
+
+    css:
+      dashboard.css:
+        content: |-
+          ダッシュボード用カスタムCSS
+          - グラフのカスタマイズ
+          - レスポンシブ調整
+        dependency: []
