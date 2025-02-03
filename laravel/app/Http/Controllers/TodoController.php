@@ -19,7 +19,20 @@ class TodoController extends Controller
 
     public function index(Request $request)
     {
-        $filters = $request->only(['status', 'search', 'deadline', 'tag_id']);
+        $filters = [];
+        
+        // filterパラメータを常に取得。存在しない場合は 'not_completed' をセット
+        $filters['filter'] = $request->input('filter', 'not_completed');
+        if ($request->has('search')) {
+            $filters['search'] = $request->input('search');
+        }
+        if ($request->has('deadline')) {
+            $filters['deadline'] = $request->input('deadline');
+        }
+        if ($request->has('tag_id')) {
+            $filters['tag_id'] = $request->input('tag_id');
+        }
+
         $todos = $this->todoService->getTodos($filters);
         $tags = auth()->user()->tags()->withCount('todos')->get();
         return view('todos.index', compact('todos', 'tags'));

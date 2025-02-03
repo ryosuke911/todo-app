@@ -40,8 +40,12 @@ class TodoService
             ->where('user_id', auth()->id())
             ->with('tags');
 
-        if (isset($filters['status'])) {
-            $query->where('status', $filters['status']);
+        if (!isset($filters['filter']) || $filters['filter'] === 'not_completed') {
+            $query->where('status', '!=', 'completed');
+        } elseif ($filters['filter'] === 'all') {
+            // 全てのタスクを表示（条件追加なし）
+        } else {
+            $query->where('status', $filters['filter']);
         }
 
         if (isset($filters['tag_id'])) {

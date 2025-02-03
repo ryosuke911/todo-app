@@ -16,11 +16,12 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
                     </div>
-                    <select name="status" class="form-select pl-10 pr-4 py-2 rounded-md shadow-sm border-gray-300 focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
-                        <option value="">全てのステータス</option>
-                        <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>未着手</option>
-                        <option value="in_progress" {{ request('status') == 'in_progress' ? 'selected' : '' }}>進行中</option>
-                        <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>完了</option>
+                    <select name="filter" class="form-select pl-10 pr-4 py-2 rounded-md shadow-sm border-gray-300 focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                        <option value="all" {{ request('filter') === 'all' ? 'selected' : '' }}>全てのステータス</option>
+                        <option value="not_completed" {{ !request()->has('filter') || request('filter') === 'not_completed' ? 'selected' : '' }}>完了以外</option>
+                        <option value="pending" {{ request('filter') === 'pending' ? 'selected' : '' }}>未着手</option>
+                        <option value="in_progress" {{ request('filter') === 'in_progress' ? 'selected' : '' }}>進行中</option>
+                        <option value="completed" {{ request('filter') === 'completed' ? 'selected' : '' }}>完了</option>
                     </select>
                 </div>
 
@@ -60,7 +61,7 @@
                     フィルター
                 </button>
 
-                @if(request('status') || request('tag_id') || request('search'))
+                @if(request('filter') || request('tag_id') || request('search'))
                     <a href="{{ route('todos.index') }}" class="inline-flex items-center px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
                         <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
