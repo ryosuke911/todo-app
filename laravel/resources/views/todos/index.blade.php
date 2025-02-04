@@ -35,7 +35,7 @@
                         <option value="">全てのタグ</option>
                         @foreach($tags as $tag)
                             <option value="{{ $tag->id }}" {{ request('tag_id') == $tag->id ? 'selected' : '' }}>
-                                {{ $tag->name }} ({{ $tag->todos_count }})
+                                {{ $tag->name }}
                             </option>
                         @endforeach
                     </select>
