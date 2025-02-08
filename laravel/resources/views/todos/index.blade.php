@@ -86,7 +86,6 @@
                     <thead>
                         <tr class="bg-gray-50">
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">タイトル</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">説明</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">期限</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ステータス</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">タグ</th>
@@ -97,11 +96,21 @@
                         @foreach($todos as $todo)
                         <tr>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <a href="{{ route('todos.show', $todo) }}" class="text-blue-600 hover:text-blue-800 hover:underline">
-                                    {{ $todo->title }}
+                                <a href="{{ route('todos.show', $todo) }}" class="group inline-flex items-center">
+                                    <span class="text-gray-900 group-hover:text-indigo-600 transition-colors duration-200">{{ $todo->title }}</span>
+                                    <div class="relative w-4 h-4 ml-1.5 transform transition-all duration-200 group-hover:translate-x-0.5">
+                                        <svg class="absolute inset-0 text-gray-400 opacity-0 group-hover:opacity-100 transition-all duration-200" 
+                                             fill="none" 
+                                             stroke="currentColor" 
+                                             viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" 
+                                                  stroke-linejoin="round" 
+                                                  stroke-width="1.5" 
+                                                  d="M9 5l7 7-7 7" />
+                                        </svg>
+                                    </div>
                                 </a>
                             </td>
-                            <td class="px-6 py-4">{{ $todo->description }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 @if($todo->deadline)
                                     {{ \Carbon\Carbon::parse($todo->deadline)->format('Y/m/d') }}
@@ -196,17 +205,16 @@
                                     </span>
                                 @endforeach
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                 <form action="{{ route('todos.destroy', $todo) }}" method="POST" class="inline">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" 
                                             onclick="return confirm('本当に削除しますか？')"
-                                            class="inline-flex items-center px-3 py-1.5 bg-red-500 text-white rounded hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition duration-200">
-                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                            class="group inline-flex items-center px-2 py-1 text-gray-500 hover:text-red-600 transition-colors duration-200">
+                                        <svg class="w-5 h-5 group-hover:text-red-600 transition-colors duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                                         </svg>
-                                        削除
                                     </button>
                                 </form>
                             </td>
