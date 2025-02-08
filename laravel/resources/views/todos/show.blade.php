@@ -128,7 +128,7 @@
                     <div class="flex flex-wrap gap-2 group-hover:bg-gray-100 p-2 rounded min-h-[2.5rem]">
                         <template x-if="editData.tags.length > 0">
                             <template x-for="tag in editData.tags" :key="tag.id">
-                                <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
+                                <span class="px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800">
                                     <span x-text="tag.name"></span>
                                 </span>
                             </template>
@@ -137,31 +137,31 @@
                             <span class="text-gray-500">タグはありません</span>
                         </template>
                         <span class="text-gray-400 text-sm ml-2 opacity-0 group-hover:opacity-100">
-                            <i class="fas fa-pencil-alt"></i> クリックして編集
+                            <i class="fas fa-pencil-alt"></i> タグを編集
                         </span>
                     </div>
                 </div>
                 <div x-show="isEditing.tags" class="relative">
-                    <div class="space-y-2">
+                    <div class="flex flex-wrap gap-2">
                         <template x-for="tag in availableTags" :key="tag.id">
-                            <div class="flex items-center">
+                            <div>
                                 <input type="checkbox"
                                        :id="'tag-' + tag.id"
                                        :value="tag.id"
                                        x-model="editData.selectedTagIds"
-                                       class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
-                                <label :for="'tag-' + tag.id" class="ml-2 text-gray-700" x-text="tag.name"></label>
+                                       class="hidden">
+                                <label :for="'tag-' + tag.id" 
+                                       @click.prevent="toggleTag(tag.id)"
+                                       class="px-3 py-1 rounded-full text-sm cursor-pointer transition-all duration-200"
+                                       :class="editData.selectedTagIds.includes(tag.id) ? 'bg-blue-100 text-blue-800' : 'bg-transparent border border-gray-300 text-gray-600 hover:bg-gray-50'"
+                                       x-text="tag.name"></label>
                             </div>
                         </template>
                     </div>
                     <div class="flex justify-end mt-2 space-x-2">
-                        <button @click="updateField('tags')"
-                                class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm">
-                            保存
-                        </button>
-                        <button @click="cancelEdit('tags')"
+                        <button @click="isEditing.tags = false"
                                 class="bg-gray-500 hover:bg-gray-600 text-white px-3 py-1 rounded text-sm">
-                            キャンセル
+                            閉じる
                         </button>
                     </div>
                     <div x-show="errors.tags" class="text-red-500 text-sm mt-1" x-text="errors.tags"></div>
@@ -327,6 +327,15 @@ document.addEventListener('alpine:init', () => {
                 hour: '2-digit',
                 minute: '2-digit'
             }).replace(/\//g, '年').replace(' ', '日 ');
+        },
+
+        toggleTag(tagId) {
+            if (this.editData.selectedTagIds.includes(tagId)) {
+                this.editData.selectedTagIds = this.editData.selectedTagIds.filter(id => id !== tagId);
+            } else {
+                this.editData.selectedTagIds.push(tagId);
+            }
+            this.updateField('tags');
         }
     }));
 });

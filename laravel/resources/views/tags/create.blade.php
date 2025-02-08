@@ -13,6 +13,9 @@
             
             <form action="{{ route('tags.store') }}" method="POST" class="bg-white shadow-md rounded-lg p-6">
                 @csrf
+                @if(request()->has('redirect'))
+                    <input type="hidden" name="redirect" value="{{ request('redirect') }}">
+                @endif
                 
                 <div class="mb-6">
                     <label for="name" class="block text-gray-700 text-sm font-bold mb-2">
@@ -27,7 +30,7 @@
                 </div>
 
                 <div class="flex justify-end gap-4">
-                    <a href="{{ route('tags.index') }}" 
+                    <a href="{{ request()->has('redirect') ? route(request('redirect')) : route('tags.index') }}" 
                         class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
                         キャンセル
                     </a>

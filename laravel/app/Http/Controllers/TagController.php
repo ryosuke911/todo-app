@@ -43,6 +43,12 @@ class TagController extends Controller
         
         $tag = Auth::user()->tags()->create($validated);
 
+        // リダイレクト先の指定がある場合はそこにリダイレクト
+        if ($request->has('redirect')) {
+            return redirect()->route($request->input('redirect'))
+                ->with('success', 'タグを作成しました。');
+        }
+
         return redirect()->route('tags.index')
             ->with('success', 'タグを作成しました。');
     }
