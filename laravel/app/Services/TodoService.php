@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Todo;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Validation\ValidationException;
 
 class TodoService
 {
@@ -27,6 +28,38 @@ class TodoService
             'status' => $data['status'] ?? $todo->status,
             'deadline' => $data['deadline'] ?? $todo->deadline,
         ]);
+    }
+
+    public function updateTitle(Todo $todo, string $title): bool
+    {
+        if (empty($title)) {
+            throw ValidationException::withMessages([
+                'title' => ['タイトルは必須です。']
+            ]);
+        }
+        return $todo->update(['title' => $title]);
+    }
+
+    public function updateDescription(Todo $todo, ?string $description): bool
+    {
+        return $todo->update(['description' => $description]);
+    }
+
+    public function updateDeadline(Todo $todo, ?string $deadline): bool
+    {
+        if (!empty($deadline)) {
+            if (!strtotime($deadline)) {
+                throw ValidationException::withMessages([
+                    'deadline' => ['期限の形式が正しくありません。']
+                ]);
+            }
+            if (strtotime($deadline) < strtotime(date('Y-m-d'))) {
+                throw ValidationException::withMessages([
+                    'deadline' => ['期限は今日以降の日付を指定してください。']
+                ]);
+            }
+        }
+        return $todo->update(['deadline' => $deadline]);
     }
 
     public function deleteTodo(Todo $todo): bool

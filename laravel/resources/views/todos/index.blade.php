@@ -80,162 +80,237 @@
         </div>
 
         <!-- タスク一覧 -->
-        <div class="overflow-x-auto">
-            <table class="min-w-full">
-                <thead>
-                    <tr class="bg-gray-50">
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">タイトル</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">説明</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">期限</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ステータス</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">タグ</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                    @foreach($todos as $todo)
-                    <tr>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ $todo->title }}</td>
-                        <td class="px-6 py-4">{{ $todo->description }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            @if($todo->deadline)
-                                {{ \Carbon\Carbon::parse($todo->deadline)->format('Y/m/d') }}
-                            @else
-                                -
-                            @endif
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="relative" x-data="{ open: false }">
-                                <button
-                                    @click="open = !open"
-                                    type="button"
-                                    data-todo-id="{{ $todo->id }}"
-                                    class="status-button px-3 py-1 rounded text-sm font-semibold cursor-pointer inline-flex items-center justify-between w-32
-                                        @if($todo->status === 'completed')
-                                            bg-green-100 text-green-800 hover:bg-green-200
-                                        @elseif($todo->status === 'in_progress')
-                                            bg-yellow-100 text-yellow-800 hover:bg-yellow-200
-                                        @else
-                                            bg-gray-100 text-gray-800 hover:bg-gray-200
-                                        @endif">
-                                    <span>{{ $todo->status === 'completed' ? '完了' : ($todo->status === 'in_progress' ? '進行中' : '未対応') }}</span>
-                                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                                    </svg>
-                                </button>
-                                <div
-                                    x-show="open"
-                                    x-cloak
-                                    @click.away="open = false"
-                                    class="absolute z-50 mt-1 w-32 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
-                                    <div class="py-1" role="menu" aria-orientation="vertical">
-                                        <button
-                                            @click="open = false"
-                                            onclick="updateStatus({{ $todo->id }}, 'pending')"
-                                            class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                            role="menuitem">
-                                            未対応
-                                        </button>
-                                        <button
-                                            @click="open = false"
-                                            onclick="updateStatus({{ $todo->id }}, 'in_progress')"
-                                            class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                            role="menuitem">
-                                            進行中
-                                        </button>
-                                        <button
-                                            @click="open = false"
-                                            onclick="updateStatus({{ $todo->id }}, 'completed')"
-                                            class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                            role="menuitem">
-                                            完了
-                                        </button>
+        <div class="relative">
+            <div class="overflow-x-auto">
+                <table class="min-w-full">
+                    <thead>
+                        <tr class="bg-gray-50">
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">タイトル</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">説明</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">期限</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ステータス</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">タグ</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        @foreach($todos as $todo)
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <a href="{{ route('todos.show', $todo) }}" class="text-blue-600 hover:text-blue-800 hover:underline">
+                                    {{ $todo->title }}
+                                </a>
+                            </td>
+                            <td class="px-6 py-4">{{ $todo->description }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                @if($todo->deadline)
+                                    {{ \Carbon\Carbon::parse($todo->deadline)->format('Y/m/d') }}
+                                @else
+                                    -
+                                @endif
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div x-data="todoStatus({{ $todo->id }}, '{{ $todo->status }}', '{{ $todo->updated_at->toISOString() }}')" 
+                                     class="relative inline-block text-left">
+                                    <button
+                                        type="button"
+                                        @click.stop="toggleDropdown"
+                                        :class="getStatusClasses(status)"
+                                        class="status-button px-3 py-1 rounded text-sm font-semibold cursor-pointer inline-flex items-center justify-between w-32">
+                                        <span x-text="getStatusText(status)"></span>
+                                        <svg class="w-4 h-4 ml-1" 
+                                             :class="{ 'transform rotate-180': open }"
+                                             fill="none" 
+                                             stroke="currentColor" 
+                                             viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" 
+                                                  stroke-linejoin="round" 
+                                                  stroke-width="2" 
+                                                  d="M19 9l-7 7-7-7" />
+                                        </svg>
+                                    </button>
+
+                                    <div x-show="open"
+                                         x-cloak
+                                         @click.away="open = false"
+                                         @keydown.escape.window="open = false"
+                                         class="fixed mt-1 w-32 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50"
+                                         x-transition:enter="transition ease-out duration-100"
+                                         x-transition:enter-start="transform opacity-0 scale-95"
+                                         x-transition:enter-end="transform opacity-100 scale-100"
+                                         x-transition:leave="transition ease-in duration-75"
+                                         x-transition:leave-start="transform opacity-100 scale-100"
+                                         x-transition:leave-end="transform opacity-0 scale-95"
+                                         x-init="$watch('open', value => {
+                                             if (value) {
+                                                 const button = $el.previousElementSibling;
+                                                 const rect = button.getBoundingClientRect();
+                                                 const tableContainer = button.closest('.overflow-x-auto');
+                                                 const tableRect = tableContainer.getBoundingClientRect();
+                                                 
+                                                 // ドロップダウンの位置を計算
+                                                 let top = rect.bottom + window.scrollY;
+                                                 let left = rect.left;
+                                                 
+                                                 // テーブルの右端を超えないように調整
+                                                 const dropdownWidth = 128; // w-32 = 8rem = 128px
+                                                 if (left + dropdownWidth > tableRect.right) {
+                                                     left = rect.right - dropdownWidth;
+                                                 }
+                                                 
+                                                 // スタイルを適用
+                                                 $el.style.top = `${top}px`;
+                                                 $el.style.left = `${left}px`;
+                                             }
+                                         })">
+                                        <div class="py-1" role="menu" aria-orientation="vertical">
+                                            <button
+                                                @click="changeStatus('pending')"
+                                                class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                                :class="{ 'bg-gray-100': status === 'pending' }"
+                                                role="menuitem">
+                                                未対応
+                                            </button>
+                                            <button
+                                                @click="changeStatus('in_progress')"
+                                                class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                                :class="{ 'bg-gray-100': status === 'in_progress' }"
+                                                role="menuitem">
+                                                進行中
+                                            </button>
+                                            <button
+                                                @click="changeStatus('completed')"
+                                                class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                                :class="{ 'bg-gray-100': status === 'completed' }"
+                                                role="menuitem">
+                                                完了
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </td>
-                        <td class="px-6 py-4">
-                            @foreach($todo->tags as $tag)
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 mr-1">
-                                    {{ $tag->name }}
-                                </span>
-                            @endforeach
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                            <a href="{{ route('todos.edit', $todo) }}" 
-                               class="inline-flex items-center px-3 py-1.5 bg-indigo-500 text-white rounded hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-200">
-                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                                </svg>
-                                編集
-                            </a>
-                            <form action="{{ route('todos.destroy', $todo) }}" method="POST" class="inline">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" 
-                                        onclick="return confirm('本当に削除しますか？')"
-                                        class="inline-flex items-center px-3 py-1.5 bg-red-500 text-white rounded hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition duration-200">
+                            </td>
+                            <td class="px-6 py-4">
+                                @foreach($todo->tags as $tag)
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 mr-1">
+                                        {{ $tag->name }}
+                                    </span>
+                                @endforeach
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                                <a href="{{ route('todos.edit', $todo) }}" 
+                                   class="inline-flex items-center px-3 py-1.5 bg-indigo-500 text-white rounded hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-200">
                                     <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                     </svg>
-                                    削除
-                                </button>
-                            </form>
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
+                                    編集
+                                </a>
+                                <form action="{{ route('todos.destroy', $todo) }}" method="POST" class="inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" 
+                                            onclick="return confirm('本当に削除しますか？')"
+                                            class="inline-flex items-center px-3 py-1.5 bg-red-500 text-white rounded hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition duration-200">
+                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                        </svg>
+                                        削除
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
 
 @push('scripts')
 <script>
-    function updateStatus(todoId, newStatus) {
-        fetch(`/todos/${todoId}/update-status`, {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('todoStatus', (todoId, initialStatus, initialTimestamp) => ({
+            open: false,
+            status: initialStatus,
+            lastUpdated: initialTimestamp,
+            
+            toggleDropdown() {
+                this.open = !this.open;
             },
-            body: JSON.stringify({ status: newStatus })
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            const button = document.querySelector(`button[data-todo-id="${todoId}"]`);
-            const statusText = button.querySelector('span');
             
-            // Remove all existing status classes
-            button.classList.remove(
-                'bg-green-100', 'text-green-800', 'hover:bg-green-200',
-                'bg-yellow-100', 'text-yellow-800', 'hover:bg-yellow-200',
-                'bg-gray-100', 'text-gray-800', 'hover:bg-gray-200'
-            );
+            getStatusClasses(status) {
+                const classes = {
+                    completed: 'bg-green-100 text-green-800 hover:bg-green-200',
+                    in_progress: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200',
+                    pending: 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                };
+                return classes[status] || classes.pending;
+            },
             
-            // Add new status classes
-            if (data.status === 'completed') {
-                button.classList.add('bg-green-100', 'text-green-800', 'hover:bg-green-200');
-                statusText.textContent = '完了';
-            } else if (data.status === 'in_progress') {
-                button.classList.add('bg-yellow-100', 'text-yellow-800', 'hover:bg-yellow-200');
-                statusText.textContent = '進行中';
-            } else {
-                button.classList.add('bg-gray-100', 'text-gray-800', 'hover:bg-gray-200');
-                statusText.textContent = '未対応';
+            getStatusText(status) {
+                const texts = {
+                    completed: '完了',
+                    in_progress: '進行中',
+                    pending: '未対応'
+                };
+                return texts[status] || texts.pending;
+            },
+            
+            async changeStatus(newStatus) {
+                if (this.status === newStatus) {
+                    this.open = false;
+                    return;
+                }
+                
+                try {
+                    const response = await fetch(`/todos/${todoId}/status`, {
+                        method: 'PATCH',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            status: newStatus,
+                            last_updated: this.lastUpdated
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        if (response.status === 409) {
+                            this.lastUpdated = data.updated_at;
+                            throw new Error(data.message || 'データが古くなっています。');
+                        }
+                        throw new Error(data.message || 'ステータスの更新に失敗しました。');
+                    }
+
+                    this.status = data.status;
+                    this.lastUpdated = data.updated_at;
+                    this.open = false;
+
+                    this.$dispatch('notify', {
+                        type: 'success',
+                        message: 'ステータスを更新しました'
+                    });
+                } catch (error) {
+                    console.error('Error:', error);
+                    
+                    this.$dispatch('notify', {
+                        type: 'error',
+                        message: error.message
+                    });
+
+                    if (error.message.includes('データが古くなっています')) {
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1500);
+                    }
+                }
             }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('ステータスの更新に失敗しました。');
-        });
-    }
+        }));
+    });
 </script>
 @endpush
 

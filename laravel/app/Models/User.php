@@ -6,9 +6,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Auth\Passwords\CanResetPassword;
-use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 
-class User extends Authenticatable
+class User extends Authenticatable implements CanResetPasswordContract
 {
     use HasFactory, Notifiable, CanResetPassword;
 
@@ -24,7 +24,6 @@ class User extends Authenticatable
     ];
 
     protected $casts = [
-        'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
 
@@ -53,16 +52,9 @@ class User extends Authenticatable
         return $query->where('status', 'active');
     }
 
-    public function verifyEmail()
-    {
-        $this->email_verified_at = now();
-        $this->save();
-    }
-
     public function sendPasswordResetNotification($token)
     {
         $url = route('password.reset', ['token' => $token]);
-
         $this->notify(new \Illuminate\Auth\Notifications\ResetPassword($token));
     }
 }

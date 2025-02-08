@@ -32,14 +32,23 @@ Route::middleware(['auth'])->group(function () {
     // ダッシュボード
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
+    // Todoの基本CRUD操作
     Route::get('/todos', [TodoController::class, 'index'])->name('todos.index');
     Route::get('/todos/create', [TodoController::class, 'create'])->name('todos.create');
     Route::post('/todos', [TodoController::class, 'store'])->name('todos.store');
+    Route::get('/todos/{todo}', [TodoController::class, 'show'])->name('todos.show');
     Route::get('/todos/{todo}/edit', [TodoController::class, 'edit'])->name('todos.edit');
     Route::put('/todos/{todo}', [TodoController::class, 'update'])->name('todos.update');
     Route::delete('/todos/{todo}', [TodoController::class, 'destroy'])->name('todos.destroy');
-    Route::post('/todos/{todo}/toggle', [TodoController::class, 'toggleStatus'])->name('todos.toggle');
-    Route::post('/todos/{todo}/update-status', [TodoController::class, 'updateStatus'])->name('todos.update-status');
+
+    // Todoの個別フィールド更新用のルート
+    Route::patch('/todos/{todo}/title', [TodoController::class, 'updateTitle'])->name('todos.update-title');
+    Route::patch('/todos/{todo}/description', [TodoController::class, 'updateDescription'])->name('todos.update-description');
+    Route::patch('/todos/{todo}/deadline', [TodoController::class, 'updateDeadline'])->name('todos.update-deadline');
+    Route::patch('/todos/{todo}/status', [TodoController::class, 'updateStatus'])->name('todos.update-status');
+    Route::patch('/todos/{todo}/tags', [TodoController::class, 'updateTags'])->name('todos.update-tags');
+
+    // タグ関連のルート
     Route::resource('tags', TagController::class)->except(['show']);
     Route::get('tags/{tag}/todos', [TagController::class, 'todos'])->name('tags.todos');
 });

@@ -25,4 +25,9 @@ class TodoPolicy
     {
         return $user->id === $todo->user_id;
     }
+
+    public function view(User $user, Todo $todo)
+    {
+        return $user->id === $todo->user_id;
+    }
 } 
