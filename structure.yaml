@@ -7,6 +7,8 @@ laravel:
       - セキュアなパスワード管理
       - レスポンシブなUI設計（Tailwind CSS）
       - タグによるTodo管理機能
+      - ダッシュボード機能（統計情報とグラフ表示）
+      - インライン編集機能
     dependency: []
 
   app:
@@ -35,6 +37,10 @@ laravel:
             - ステータス切り替え機能
             - フィルタリング機能
             - タグによるフィルタリング機能
+            - インライン編集機能
+              - 個別フィールド更新
+              - バリデーション処理
+              - 非同期更新処理
           dependency:
             - app/Services/TodoService.php
             - app/Models/Todo.php
@@ -51,6 +57,7 @@ laravel:
             - app/Models/Tag.php
             - app/Models/Todo.php
             - app/Policies/TagPolicy.php
+            - app/Models/User.php
 
         DashboardController.php:
           content: |-
@@ -63,6 +70,7 @@ laravel:
             - app/Services/DashboardService.php
             - app/Models/Todo.php
             - app/Models/Tag.php
+            - app/Models/User.php
 
       Middleware:
         AuthenticateUser.php:
@@ -92,8 +100,12 @@ laravel:
           - 期限切れタスクの取得
           - ステータス管理
           - ページネーション処理
+          - フィールド単位の更新処理
+          - 楽観的ロック制御
         dependency:
           - app/Models/Todo.php
+          - app/Models/Tag.php
+          - app/Models/User.php
 
       DashboardService.php:
         content: |-
@@ -135,6 +147,8 @@ laravel:
             - Factory対応
             - カスタムメソッド（isOverdue, markAsCompleted）
             - タグ関連のスコープメソッド
+            - フィールド単位の更新メソッド
+            - バージョン管理（楽観的ロック用）
         dependency:
           - app/Models/User.php
           - app/Models/Tag.php
@@ -161,6 +175,7 @@ laravel:
         dependency:
           - app/Models/User.php
           - app/Models/Todo.php
+          - app/Models/Tag.php
 
       TagPolicy.php:
         content: |-
@@ -171,6 +186,7 @@ laravel:
         dependency:
           - app/Models/User.php
           - app/Models/Tag.php
+          - app/Models/Todo.php
 
     View:
       Components:
@@ -251,10 +267,15 @@ laravel:
             - タグフィルター
             - 新規作成ボタン
             - 編集/削除機能
+            - インライン編集機能
+              - クリックで編集モード
+              - リアルタイムバリデーション
+              - 自動保存機能
             - ナビゲーションバー
               - ユーザー名表示
               - ログアウトボタン
             スタイリング: Tailwind CSS
+            JavaScript: Alpine.js
           dependency: []
 
         create.blade.php:
@@ -354,7 +375,9 @@ laravel:
               - データラベル表示
               スタイリング: Tailwind CSS
               JavaScript: Chart.js
-            dependency: []
+            dependency:
+              - public/js/dashboard.js
+              - public/css/dashboard.css
 
           timeline-chart.blade.php:
             content: |-
@@ -366,7 +389,9 @@ laravel:
               - トレンドライン表示
               スタイリング: Tailwind CSS
               JavaScript: Chart.js
-            dependency: []
+            dependency:
+              - public/js/dashboard.js
+              - public/css/dashboard.css
 
           sidebar.blade.php:
             content: |-
@@ -416,6 +441,7 @@ laravel:
           - ユーザーとの関連付け
           - ソフトデリート対応
           - タイムスタンプ
+          - バージョン管理カラム（version）
         dependency: []
 
       create_tags_table.php:
@@ -424,7 +450,8 @@ laravel:
           - 基本属性（id, name, user_id）
           - タイムスタンプ
           - ユーザーとの関連付け
-        dependency: []
+        dependency:
+          - database/migrations/create_users_table.php
 
       create_todo_tag_table.php:
         content: |-
@@ -432,7 +459,9 @@ laravel:
           - 関連キー（todo_id, tag_id）
           - 複合主キー
           - 外部キー制約
-        dependency: []
+        dependency:
+          - database/migrations/create_todos_table.php
+          - database/migrations/create_tags_table.php
 
   .env:
     content: |-
@@ -468,4 +497,13 @@ laravel:
         - キャッシュストアの設定
         - キャッシュプレフィックス
         - キャッシュTTLの設定
+      dependency: []
+
+    todo.js:
+      content: |-
+        Todo管理用JavaScript
+        - インライン編集の制御
+        - 非同期更新処理
+        - バリデーション制御
+        - 楽観的ロック制御
       dependency: []
