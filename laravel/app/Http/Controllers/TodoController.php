@@ -67,36 +67,10 @@ class TodoController extends Controller
         return redirect()->route('todos.index')->with('success', 'タスクを作成しました');
     }
 
-    public function edit(Todo $todo)
+    public function show(Todo $todo)
     {
-        $this->authorize('update', $todo);
-        $tags = auth()->user()->tags()->get();
-        return view('todos.edit', compact('todo', 'tags'));
-    }
-
-    public function update(Request $request, Todo $todo)
-    {
-        $this->authorize('update', $todo);
-
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'deadline' => 'nullable|date|after_or_equal:today',
-            'status' => 'required|string|in:pending,in_progress,completed',
-            'tags' => 'nullable|array',
-            'tags.*' => 'exists:tags,id'
-        ]);
-
-        $this->todoService->updateTodo($todo, $validated);
-
-        // タグの更新
-        if (isset($validated['tags'])) {
-            $todo->tags()->sync($validated['tags']);
-        } else {
-            $todo->tags()->detach();
-        }
-
-        return redirect()->route('todos.index')->with('success', 'タスクを更新しました');
+        $this->authorize('view', $todo);
+        return view('todos.show', compact('todo'));
     }
 
     public function destroy(Todo $todo)
@@ -166,12 +140,6 @@ class TodoController extends Controller
             ]);
             return response()->json(['message' => 'ステータスの更新に失敗しました。'], 500);
         }
-    }
-
-    public function show(Todo $todo)
-    {
-        $this->authorize('view', $todo);
-        return view('todos.show', compact('todo'));
     }
 
     /**

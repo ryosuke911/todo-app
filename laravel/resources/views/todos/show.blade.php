@@ -27,9 +27,6 @@
                 </div>
             </div>
             <div class="flex space-x-2">
-                <a href="{{ route('todos.edit', $todo) }}" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">
-                    編集
-                </a>
                 <form action="{{ route('todos.destroy', $todo) }}" method="POST" class="inline">
                     @csrf
                     @method('DELETE')
@@ -184,13 +181,6 @@
                     <span x-text="formatDateTime(lastUpdated || '{{ $todo->updated_at->toISOString() }}')"></span>
                 </div>
             </div>
-        </div>
-
-        <!-- 戻るボタン -->
-        <div class="mt-6">
-            <a href="{{ route('todos.index') }}" class="text-blue-500 hover:text-blue-600">
-                ← タスク一覧に戻る
-            </a>
         </div>
 
         <!-- 同時編集防止のための隠しフィールド -->
