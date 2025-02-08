@@ -19,7 +19,7 @@
                     <select name="filter" class="form-select pl-10 pr-4 py-2 rounded-md shadow-sm border-gray-300 focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
                         <option value="all" {{ request('filter') === 'all' ? 'selected' : '' }}>全てのステータス</option>
                         <option value="not_completed" {{ !request()->has('filter') || request('filter') === 'not_completed' ? 'selected' : '' }}>完了以外</option>
-                        <option value="pending" {{ request('filter') === 'pending' ? 'selected' : '' }}>未着手</option>
+                        <option value="pending" {{ request('filter') === 'pending' ? 'selected' : '' }}>未対応</option>
                         <option value="in_progress" {{ request('filter') === 'in_progress' ? 'selected' : '' }}>進行中</option>
                         <option value="completed" {{ request('filter') === 'completed' ? 'selected' : '' }}>完了</option>
                     </select>
