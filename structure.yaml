@@ -118,6 +118,7 @@ laravel:
         dependency:
           - app/Models/Todo.php
           - app/Models/Tag.php
+          - app/Models/User.php
 
     Models:
       User.php:
@@ -207,7 +208,8 @@ laravel:
           - ビューコンポーザーの登録
           - カスタムバリデーションルールの登録
           - グローバル変数の設定
-        dependency: []
+        dependency:
+          - app/Models/User.php
 
       AuthServiceProvider.php:
         content: |-

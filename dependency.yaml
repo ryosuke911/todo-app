@@ -1,0 +1,200 @@
+laravel:
+  app:
+    Http:
+      Controllers:
+        AuthController.php:
+          dependency:
+            - app/Services/AuthService.php
+            - app/Models/User.php
+
+        TodoController.php:
+          dependency:
+            - app/Services/TodoService.php
+            - app/Models/Todo.php
+            - app/Models/Tag.php
+            - app/Policies/TodoPolicy.php
+
+        TagController.php:
+          dependency:
+            - app/Models/Tag.php
+            - app/Models/Todo.php
+            - app/Policies/TagPolicy.php
+            - app/Models/User.php
+
+        DashboardController.php:
+          dependency:
+            - app/Services/DashboardService.php
+            - app/Models/Todo.php
+            - app/Models/Tag.php
+            - app/Models/User.php
+
+      Middleware:
+        AuthenticateUser.php:
+          dependency: []
+
+    Services:
+      AuthService.php:
+        dependency:
+          - app/Models/User.php
+
+      TodoService.php:
+        dependency:
+          - app/Models/Todo.php
+          - app/Models/Tag.php
+          - app/Models/User.php
+
+      DashboardService.php:
+        dependency:
+          - app/Models/Todo.php
+          - app/Models/Tag.php
+          - app/Models/User.php
+
+    Models:
+      User.php:
+        dependency: []
+
+      Todo.php:
+        dependency:
+          - app/Models/User.php
+          - app/Models/Tag.php
+
+      Tag.php:
+        dependency:
+          - app/Models/User.php
+          - app/Models/Todo.php
+
+    Policies:
+      TodoPolicy.php:
+        dependency:
+          - app/Models/User.php
+          - app/Models/Todo.php
+          - app/Models/Tag.php
+
+      TagPolicy.php:
+        dependency:
+          - app/Models/User.php
+          - app/Models/Tag.php
+          - app/Models/Todo.php
+
+    View:
+      Components:
+        Sidebar.php:
+          dependency:
+            - resources/views/components/sidebar.blade.php
+
+    Providers:
+      AppServiceProvider.php:
+        dependency:
+          - app/Models/User.php
+
+      AuthServiceProvider.php:
+        dependency:
+          - app/Policies/TodoPolicy.php
+          - app/Policies/TagPolicy.php
+
+  resources:
+    views:
+      auth:
+        login.blade.php:
+          dependency:
+            - resources/views/layouts/empty.blade.php
+
+        register.blade.php:
+          dependency: []
+
+        reset-password.blade.php:
+          dependency: []
+
+        forgot-password.blade.php:
+          dependency: []
+
+      todos:
+        index.blade.php:
+          dependency:
+            - resources/views/layouts/app.blade.php
+
+        create.blade.php:
+          dependency: []
+
+        edit.blade.php:
+          dependency: []
+
+      tags:
+        index.blade.php:
+          dependency: []
+
+        create.blade.php:
+          dependency: []
+
+        edit.blade.php:
+          dependency: []
+
+      dashboard:
+        index.blade.php:
+          dependency: []
+
+        components:
+          stats-card.blade.php:
+            dependency:
+              - resources/views/layouts/app.blade.php
+
+          progress-chart.blade.php:
+            dependency: []
+
+          tag-chart.blade.php:
+            dependency:
+              - public/js/dashboard.js
+              - public/css/dashboard.css
+
+          timeline-chart.blade.php:
+            dependency:
+              - public/js/dashboard.js
+              - public/css/dashboard.css
+
+          sidebar.blade.php:
+            dependency:
+              - app/View/Components/Sidebar.php
+
+      layouts:
+        app.blade.php:
+          dependency: []
+
+        empty.blade.php:
+          dependency: []
+
+  database:
+    migrations:
+      create_users_table.php:
+        dependency: []
+
+      create_todos_table.php:
+        dependency: []
+
+      create_tags_table.php:
+        dependency:
+          - database/migrations/create_users_table.php
+
+      create_todo_tag_table.php:
+        dependency:
+          - database/migrations/create_todos_table.php
+          - database/migrations/create_tags_table.php
+
+  .env:
+    dependency: []
+
+  public:
+    js:
+      dashboard.js:
+        dependency: []
+
+    css:
+      dashboard.css:
+        dependency: []
+
+  config:
+    cache.php:
+      dependency:
+        - .env
+
+    todo.js:
+      dependency: [] 
