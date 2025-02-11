@@ -1,0 +1,571 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="/Users/ryosuke/Downloads/todo-app/laravel/phpunit.xml" tests="14" assertions="40" errors="1" failures="3" skipped="0" time="0.668330">
+    <testsuite name="Unit" tests="6" assertions="9" errors="0" failures="0" skipped="0" time="0.247550">
+      <testsuite name="Tests\Unit\ExampleTest" file="/Users/ryosuke/Downloads/todo-app/laravel/tests/Unit/ExampleTest.php" tests="1" assertions="1" errors="0" failures="0" skipped="0" time="0.001110">
+        <testcase name="test_that_true_is_true" file="/Users/ryosuke/Downloads/todo-app/laravel/tests/Unit/ExampleTest.php" line="12" class="Tests\Unit\ExampleTest" classname="Tests.Unit.ExampleTest" assertions="1" time="0.001110"/>
+      </testsuite>
+      <testsuite name="Tests\Unit\TodoServiceTest" file="/Users/ryosuke/Downloads/todo-app/laravel/tests/Unit/TodoServiceTest.php" tests="5" assertions="8" errors="0" failures="0" skipped="0" time="0.246440">
+        <testcase name="test_can_update_todo_title_in_service" file="/Users/ryosuke/Downloads/todo-app/laravel/tests/Unit/TodoServiceTest.php" line="33" class="Tests\Unit\TodoServiceTest" classname="Tests.Unit.TodoServiceTest" assertions="2" time="0.202579"/>
+        <testcase name="test_can_update_todo_description_in_service" file="/Users/ryosuke/Downloads/todo-app/laravel/tests/Unit/TodoServiceTest.php" line="41" class="Tests\Unit\TodoServiceTest" classname="Tests.Unit.TodoServiceTest" assertions="2" time="0.011265"/>
+        <testcase name="test_can_update_todo_deadline_in_service" file="/Users/ryosuke/Downloads/todo-app/laravel/tests/Unit/TodoServiceTest.php" line="49" class="Tests\Unit\TodoServiceTest" classname="Tests.Unit.TodoServiceTest" assertions="2" time="0.010497"/>
+        <testcase name="test_cannot_update_with_invalid_title" file="/Users/ryosuke/Downloads/todo-app/laravel/tests/Unit/TodoServiceTest.php" line="58" class="Tests\Unit\TodoServiceTest" classname="Tests.Unit.TodoServiceTest" assertions="1" time="0.012651"/>
+        <testcase name="test_cannot_update_with_invalid_deadline" file="/Users/ryosuke/Downloads/todo-app/laravel/tests/Unit/TodoServiceTest.php" line="64" class="Tests\Unit\TodoServiceTest" classname="Tests.Unit.TodoServiceTest" assertions="1" time="0.009448"/>
+      </testsuite>
+    </testsuite>
+    <testsuite name="Feature" tests="8" assertions="31" errors="1" failures="3" skipped="0" time="0.420780">
+      <testsuite name="Tests\Feature\Auth\AuthenticationFlowTest" file="/Users/ryosuke/Downloads/todo-app/laravel/tests/Feature/Auth/AuthenticationFlowTest.php" tests="3" assertions="15" errors="0" failures="0" skipped="0" time="0.255815">
+        <testcase name="test_successful_login_maintains_recorded_behavior" file="/Users/ryosuke/Downloads/todo-app/laravel/tests/Feature/Auth/AuthenticationFlowTest.php" line="30" class="Tests\Feature\Auth\AuthenticationFlowTest" classname="Tests.Feature.Auth.AuthenticationFlowTest" assertions="5" time="0.025291"/>
+        <testcase name="test_invalid_login_maintains_recorded_behavior" file="/Users/ryosuke/Downloads/todo-app/laravel/tests/Feature/Auth/AuthenticationFlowTest.php" line="55" class="Tests\Feature\Auth\AuthenticationFlowTest" classname="Tests.Feature.Auth.AuthenticationFlowTest" assertions="5" time="0.214523"/>
+        <testcase name="test_logout_maintains_recorded_behavior" file="/Users/ryosuke/Downloads/todo-app/laravel/tests/Feature/Auth/AuthenticationFlowTest.php" line="80" class="Tests\Feature\Auth\AuthenticationFlowTest" classname="Tests.Feature.Auth.AuthenticationFlowTest" assertions="5" time="0.016001"/>
+      </testsuite>
+      <testsuite name="Tests\Feature\Tag\TagManagementTest" file="/Users/ryosuke/Downloads/todo-app/laravel/tests/Feature/Tag/TagManagementTest.php" tests="2" assertions="8" errors="1" failures="1" skipped="0" time="0.057678">
+        <testcase name="test_tag_deletion_maintains_recorded_behavior" file="/Users/ryosuke/Downloads/todo-app/laravel/tests/Feature/Tag/TagManagementTest.php" line="28" class="Tests\Feature\Tag\TagManagementTest" classname="Tests.Feature.Tag.TagManagementTest" assertions="4" time="0.029361">
+          <error type="Illuminate\Database\QueryException">Tests\Feature\Tag\TagManagementTest::test_tag_deletion_maintains_recorded_behavior
+Illuminate\Database\QueryException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'todo_app.todo_tag' doesn't exist (Connection: mysql, SQL: select exists(select * from `todo_tag` where (`tag_id` = 1 and `todo_id` = 6)) as `exists`)
+
+/Users/ryosuke/Downloads/todo-app/laravel/vendor/laravel/framework/src/Illuminate/Database/Connection.php:825
+/Users/ryosuke/Downloads/todo-app/laravel/vendor/laravel/framework/src/Illuminate/Database/Connection.php:779
+/Users/ryosuke/Downloads/todo-app/laravel/vendor/laravel/framework/src/Illuminate/Database/Connection.php:398
+/Users/ryosuke/Downloads/todo-app/laravel/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php:3505
+/Users/ryosuke/Downloads/todo-app/laravel/vendor/laravel/framework/src/Illuminate/Testing/Constraints/HasInDatabase.php:56
+/Users/ryosuke/Downloads/todo-app/laravel/vendor/laravel/framework/src/Illuminate/Foundation/Testing/Concerns/InteractsWithDatabase.php:64
+/Users/ryosuke/Downloads/todo-app/laravel/tests/Feature/Tag/TagManagementTest.php:54</error>
+        </testcase>
+        <testcase name="test_tag_update_maintains_consistency" file="/Users/ryosuke/Downloads/todo-app/laravel/tests/Feature/Tag/TagManagementTest.php" line="68" class="Tests\Feature\Tag\TagManagementTest" classname="Tests.Feature.Tag.TagManagementTest" assertions="4" time="0.028317">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">Tests\Feature\Tag\TagManagementTest::test_tag_update_maintains_consistency
+Failed asserting that '&lt;!DOCTYPE html&gt;\n
+&lt;html lang="ja"&gt;\n
+&lt;head&gt;\n
+    &lt;meta charset="UTF-8"&gt;\n
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;\n
+    &lt;title&gt;Todo App&lt;/title&gt;\n
+    \n
+    &lt;!-- x-cloak directive style --&gt;\n
+    &lt;style&gt;\n
+        [x-cloak] { display: none !important; }\n
+    &lt;/style&gt;\n
+    \n
+    &lt;!-- Tailwind CSS --&gt;\n
+    &lt;script src="https://cdn.tailwindcss.com"&gt;&lt;/script&gt;\n
+    \n
+    &lt;!-- Alpine.js --&gt;\n
+    &lt;script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"&gt;&lt;/script&gt;\n
+\n
+    &lt;!-- Chart.js --&gt;\n
+    &lt;script src="https://cdn.jsdelivr.net/npm/chart.js"&gt;&lt;/script&gt;\n
+    \n
+    &lt;!-- Font Awesome --&gt;\n
+    &lt;link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"&gt;\n
+    \n
+    &lt;/head&gt;\n
+&lt;body class="bg-gray-100 min-h-screen"&gt;\n
+    &lt;div class="flex"&gt;\n
+        &lt;!-- サイドバー --&gt;\n
+                    &lt;!-- サイドバー --&gt;\n
+&lt;aside class="w-64 bg-white shadow-lg h-screen fixed"&gt;\n
+    &lt;div class="flex flex-col h-full"&gt;\n
+        &lt;!-- ユーザー情報 --&gt;\n
+        &lt;div class="p-4 border-b"&gt;\n
+            &lt;div class="font-semibold text-lg"&gt;Mr. Dangelo Kemmer&lt;/div&gt;\n
+            &lt;div class="text-sm text-gray-500"&gt;roy.parker@example.net&lt;/div&gt;\n
+        &lt;/div&gt;\n
+\n
+        &lt;!-- ナビゲーション --&gt;\n
+        &lt;nav class="flex-1 p-4"&gt;\n
+            &lt;ul class="space-y-2"&gt;\n
+                &lt;li&gt;\n
+                    &lt;a href="http://localhost/todos" \n
+                       class="flex items-center p-2 rounded-lg hover:bg-gray-100 text-gray-700"&gt;\n
+                        &lt;svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"&gt;\n
+                            &lt;path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/&gt;\n
+                        &lt;/svg&gt;\n
+                        &lt;span&gt;タスク一覧&lt;/span&gt;\n
+                    &lt;/a&gt;\n
+                &lt;/li&gt;\n
+                &lt;li&gt;\n
+                    &lt;a href="http://localhost/dashboard" \n
+                       class="flex items-center p-2 rounded-lg hover:bg-gray-100 text-gray-700"&gt;\n
+                        &lt;svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"&gt;\n
+                            &lt;path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/&gt;\n
+                        &lt;/svg&gt;\n
+                        &lt;span&gt;ダッシュボード&lt;/span&gt;\n
+                    &lt;/a&gt;\n
+                &lt;/li&gt;\n
+                &lt;li&gt;\n
+                    &lt;a href="http://localhost/tags" \n
+                       class="flex items-center p-2 rounded-lg hover:bg-gray-100 text-gray-700"&gt;\n
+                        &lt;svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"&gt;\n
+                            &lt;path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/&gt;\n
+                        &lt;/svg&gt;\n
+                        &lt;span&gt;タグ管理&lt;/span&gt;\n
+                    &lt;/a&gt;\n
+                &lt;/li&gt;\n
+            &lt;/ul&gt;\n
+        &lt;/nav&gt;\n
+\n
+        &lt;!-- ログアウト --&gt;\n
+        &lt;div class="p-4 border-t mt-auto"&gt;\n
+            &lt;form action="http://localhost/logout" method="POST"&gt;\n
+                &lt;input type="hidden" name="_token" value="EFbHQ7iA0iVuoPwCm4Is9iwO1BuvrV4gpDq0btbW" autocomplete="off"&gt;                &lt;button type="submit" class="w-full px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition duration-200"&gt;\n
+                    &lt;span&gt;ログアウト&lt;/span&gt;\n
+                &lt;/button&gt;\n
+            &lt;/form&gt;\n
+        &lt;/div&gt;\n
+    &lt;/div&gt;\n
+&lt;/aside&gt;         \n
+        &lt;div class="flex-1 ml-64"&gt;\n
+            &lt;!-- ナビゲーションバー --&gt;\n
+            &lt;nav class="bg-white shadow-lg"&gt;\n
+                &lt;div class="max-w-7xl mx-auto px-4"&gt;\n
+                    &lt;div class="flex justify-between h-16"&gt;\n
+                        &lt;div class="flex"&gt;\n
+                            &lt;div class="flex-shrink-0 flex items-center"&gt;\n
+                                &lt;a href="http://localhost/todos" class="text-xl font-bold text-gray-800"&gt;\n
+                                    Todo App\n
+                                &lt;/a&gt;\n
+                            &lt;/div&gt;\n
+                        &lt;/div&gt;\n
+                        \n
+                                                &lt;div class="flex items-center"&gt;\n
+                            &lt;span class="text-gray-600 mr-4"&gt;Mr. Dangelo Kemmer&lt;/span&gt;\n
+                        &lt;/div&gt;\n
+                                            &lt;/div&gt;\n
+                &lt;/div&gt;\n
+            &lt;/nav&gt;\n
+\n
+            &lt;!-- メインコンテンツ --&gt;\n
+            &lt;main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8"&gt;\n
+                &lt;!-- 通知コンポーネント --&gt;\n
+                &lt;div x-data="notifications"\n
+                     class="fixed top-4 right-4 z-50"\n
+                     @notify.window="add($event.detail)"&gt;\n
+                    &lt;template x-for="notification in notifications" :key="notification.id"&gt;\n
+                        &lt;div x-show="notification.show"\n
+                             x-transition:enter="transition ease-out duration-300"\n
+                             x-transition:enter-start="opacity-0 transform translate-x-8"\n
+                             x-transition:enter-end="opacity-100 transform translate-x-0"\n
+                             x-transition:leave="transition ease-in duration-200"\n
+                             x-transition:leave-start="opacity-100 transform translate-x-0"\n
+                             x-transition:leave-end="opacity-0 transform translate-x-8"\n
+                             class="flex items-center p-4 mb-4 rounded-lg shadow-lg"\n
+                             :class="{\n
+                                 'bg-green-100 text-green-800': notification.type === 'success',\n
+                                 'bg-red-100 text-red-800': notification.type === 'error'\n
+                             }"&gt;\n
+                            &lt;div class="flex-shrink-0 mr-3"&gt;\n
+                                &lt;template x-if="notification.type === 'success'"&gt;\n
+                                    &lt;i class="fas fa-check-circle"&gt;&lt;/i&gt;\n
+                                &lt;/template&gt;\n
+                                &lt;template x-if="notification.type === 'error'"&gt;\n
+                                    &lt;i class="fas fa-exclamation-circle"&gt;&lt;/i&gt;\n
+                                &lt;/template&gt;\n
+                            &lt;/div&gt;\n
+                            &lt;div x-text="notification.message"&gt;&lt;/div&gt;\n
+                            &lt;button @click="remove(notification.id)" class="ml-4 text-current hover:text-gray-700"&gt;\n
+                                &lt;i class="fas fa-times"&gt;&lt;/i&gt;\n
+                            &lt;/button&gt;\n
+                        &lt;/div&gt;\n
+                    &lt;/template&gt;\n
+                &lt;/div&gt;\n
+\n
+                &lt;div class="container mx-auto px-4 py-5"&gt;\n
+    &lt;div class="max-w-4xl mx-auto bg-white rounded-xl shadow-md overflow-hidden" x-data="todoEdit"&gt;\n
+        &lt;!-- ヘッダー部分 --&gt;\n
+        &lt;div class="relative bg-gradient-to-r from-blue-500/90 to-blue-600/90 p-5"&gt;\n
+            &lt;div class="relative flex justify-between items-center"&gt;\n
+                &lt;div class="flex-1"&gt;\n
+                    &lt;!-- タイトル編集 --&gt;\n
+                    &lt;div x-show="!isEditing.title" @click="startEdit('title')" class="group cursor-pointer"&gt;\n
+                        &lt;h1 class="text-xl font-medium text-white group-hover:bg-white/10 p-2.5 -ml-2.5 rounded-lg transition-all duration-200"&gt;\n
+                            &lt;span x-ref="titleDisplay"&gt;テストTodo&lt;/span&gt;\n
+                            &lt;span class="text-white/60 text-sm ml-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200"&gt;\n
+                                &lt;i class="fas fa-pencil-alt"&gt;&lt;/i&gt;\n
+                            &lt;/span&gt;\n
+                        &lt;/h1&gt;\n
+                    &lt;/div&gt;\n
+                    &lt;div x-show="isEditing.title" class="relative"&gt;\n
+                        &lt;input type="text" \n
+                               x-model="editData.title" \n
+                               @keydown.enter="updateField('title')"\n
+                               @keydown.escape="cancelEdit('title')"\n
+                               class="w-full text-lg font-medium bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg p-2.5 text-white placeholder-white/50 focus:outline-none focus:border-white/30 focus:bg-white/15 transition-all duration-200"\n
+                               :class="{'border-red-300': errors.title}"\n
+                        &gt;\n
+                        &lt;div x-show="errors.title" class="text-red-200 text-sm mt-1.5" x-text="errors.title"&gt;&lt;/div&gt;\n
+                    &lt;/div&gt;\n
+                &lt;/div&gt;\n
+                &lt;div class="flex space-x-2"&gt;\n
+                    &lt;form action="http://localhost/todos/7" method="POST" class="inline"&gt;\n
+                        &lt;input type="hidden" name="_token" value="EFbHQ7iA0iVuoPwCm4Is9iwO1BuvrV4gpDq0btbW" autocomplete="off"&gt;                        &lt;input type="hidden" name="_method" value="DELETE"&gt;                        &lt;button type="submit" class="bg-red-500/70 hover:bg-red-600 text-white px-3.5 py-2 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-blue-600/90 text-sm" onclick="return confirm('本当に削除しますか？')"&gt;\n
+                            &lt;i class="fas fa-trash-alt mr-1.5"&gt;&lt;/i&gt;削除\n
+                        &lt;/button&gt;\n
+                    &lt;/form&gt;\n
+                &lt;/div&gt;\n
+            &lt;/div&gt;\n
+        &lt;/div&gt;\n
+\n
+        &lt;div class="p-5 space-y-5 bg-gray-50/50"&gt;\n
+            &lt;!-- ステータスと期限 --&gt;\n
+            &lt;div class="grid grid-cols-12 gap-5"&gt;\n
+                &lt;div class="col-span-12 md:col-span-6 lg:col-span-3"&gt;\n
+                    &lt;div class="bg-white rounded-lg p-4 shadow-sm"&gt;\n
+                        &lt;h2 class="text-sm font-medium text-gray-700 mb-3 flex items-center"&gt;\n
+                            &lt;i class="fas fa-tasks mr-2 text-gray-400"&gt;&lt;/i&gt;ステータス\n
+                        &lt;/h2&gt;\n
+                        &lt;div class="relative group cursor-pointer"&gt;\n
+                            &lt;span x-ref="statusBadge" class="inline-flex items-center px-3.5 py-2 rounded-lg text-sm font-medium shadow-sm transition-all duration-200\n
+                                 bg-gray-50 text-gray-700 border border-gray-200\n
+                                 hover:shadow-md transform hover:scale-[1.01]"&gt;\n
+                                &lt;span x-ref="statusDisplay"&gt;未対応&lt;/span&gt;\n
+                                &lt;i class="fas fa-chevron-down ml-2 text-gray-400"&gt;&lt;/i&gt;\n
+                            &lt;/span&gt;\n
+                            &lt;select x-model="editData.status"\n
+                                    @change="updateField('status')"\n
+                                    class="absolute inset-0 opacity-0 cursor-pointer"&gt;\n
+                                &lt;option value="pending"&gt;未対応&lt;/option&gt;\n
+                                &lt;option value="in_progress"&gt;進行中&lt;/option&gt;\n
+                                &lt;option value="completed"&gt;完了&lt;/option&gt;\n
+                            &lt;/select&gt;\n
+                        &lt;/div&gt;\n
+                    &lt;/div&gt;\n
+                &lt;/div&gt;\n
+                \n
+                &lt;div class="col-span-12 md:col-span-6 lg:col-span-3"&gt;\n
+                    &lt;div class="bg-white rounded-lg p-4 shadow-sm"&gt;\n
+                        &lt;h2 class="text-sm font-medium text-gray-700 mb-3 flex items-center"&gt;\n
+                            &lt;i class="fas fa-calendar-alt mr-2 text-gray-400"&gt;&lt;/i&gt;期限\n
+                        &lt;/h2&gt;\n
+                        &lt;div class="relative group cursor-pointer" @click="$refs.deadlineInput.showPicker()"&gt;\n
+                            &lt;div class="inline-flex items-center px-3.5 py-2 rounded-lg text-sm font-medium bg-white border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200"&gt;\n
+                                &lt;span x-ref="deadlineDisplay"&gt;2026年01月19日&lt;/span&gt;\n
+                                &lt;i class="fas fa-calendar ml-2 text-gray-400"&gt;&lt;/i&gt;\n
+                            &lt;/div&gt;\n
+                            &lt;input type="date" \n
+                                   x-ref="deadlineInput"\n
+                                   x-model="editData.deadline"\n
+                                   @change="updateField('deadline')"\n
+                                   class="absolute inset-0 opacity-0 cursor-pointer"&gt;\n
+                        &lt;/div&gt;\n
+                    &lt;/div&gt;\n
+                &lt;/div&gt;\n
+            &lt;/div&gt;\n
+\n
+            &lt;!-- タグ --&gt;\n
+            &lt;div class="bg-white rounded-lg p-4 shadow-sm"&gt;\n
+                &lt;h2 class="text-sm font-medium text-gray-700 mb-3 flex items-center"&gt;\n
+                    &lt;i class="fas fa-tags mr-2 text-gray-400"&gt;&lt;/i&gt;タグ\n
+                &lt;/h2&gt;\n
+                &lt;div x-show="!isEditing.tags" @click="startEdit('tags')" class="group cursor-pointer"&gt;\n
+                    &lt;div class="flex flex-wrap gap-2 min-h-[2.25rem]"&gt;\n
+                        &lt;template x-if="editData.tags.length &gt; 0"&gt;\n
+                            &lt;template x-for="tag in editData.tags" :key="tag.id"&gt;\n
+                                &lt;span class="inline-flex items-center px-2.5 py-1.5 rounded-full text-sm bg-gray-700 text-white border border-gray-600"&gt;\n
+                                    &lt;i class="fas fa-tag mr-1.5 text-white/80"&gt;&lt;/i&gt;\n
+                                    &lt;span x-text="tag.name"&gt;&lt;/span&gt;\n
+                                &lt;/span&gt;\n
+                            &lt;/template&gt;\n
+                        &lt;/template&gt;\n
+                        &lt;template x-if="editData.tags.length === 0"&gt;\n
+                            &lt;span class="text-gray-500 text-sm"&gt;タグはありません&lt;/span&gt;\n
+                        &lt;/template&gt;\n
+                    &lt;/div&gt;\n
+                &lt;/div&gt;\n
+                &lt;div x-show="isEditing.tags" class="relative"&gt;\n
+                    &lt;div class="flex flex-wrap gap-2"&gt;\n
+                        &lt;template x-for="tag in availableTags" :key="tag.id"&gt;\n
+                            &lt;div&gt;\n
+                                &lt;input type="checkbox"\n
+                                       :id="'tag-' + tag.id"\n
+                                       :value="tag.id"\n
+                                       x-model="editData.selectedTagIds"\n
+                                       class="hidden"&gt;\n
+                                &lt;label :for="'tag-' + tag.id" \n
+                                       @click.prevent="toggleTag(tag.id)"\n
+                                       class="inline-flex items-center px-2.5 py-1.5 rounded-full text-sm cursor-pointer transition-all duration-200"\n
+                                       :class="editData.selectedTagIds.includes(tag.id) ? 'bg-gray-700 text-white border border-gray-600' : 'bg-gray-100 text-gray-600 border border-gray-200 hover:bg-gray-200'"&gt;\n
+                                    &lt;i class="fas fa-tag mr-1.5" :class="editData.selectedTagIds.includes(tag.id) ? 'text-white/80' : 'text-gray-400'"&gt;&lt;/i&gt;\n
+                                    &lt;span x-text="tag.name"&gt;&lt;/span&gt;\n
+                                &lt;/label&gt;\n
+                            &lt;/div&gt;\n
+                        &lt;/template&gt;\n
+                    &lt;/div&gt;\n
+                &lt;/div&gt;\n
+            &lt;/div&gt;\n
+\n
+            &lt;!-- 説明 --&gt;\n
+            &lt;div class="bg-white rounded-lg p-4 shadow-sm"&gt;\n
+                &lt;h2 class="text-sm font-medium text-gray-700 mb-3 flex items-center"&gt;\n
+                    &lt;i class="fas fa-align-left mr-2 text-gray-400"&gt;&lt;/i&gt;説明\n
+                &lt;/h2&gt;\n
+                &lt;div x-show="!isEditing.description" @click="startEdit('description')" class="group cursor-pointer"&gt;\n
+                    &lt;div class="bg-gray-50 rounded-lg p-4 min-h-[6rem] max-h-[16rem] overflow-y-auto group-hover:bg-gray-100/80 transition-all duration-200"&gt;\n
+                        &lt;p class="text-gray-600 whitespace-pre-wrap text-sm"&gt;\n
+                            &lt;span x-ref="descriptionDisplay"&gt;Accusantium id minima eum atque eum cumque et. Quae ut ut minus ut velit placeat quod. Dolores et ipsam nihil est ullam sunt esse dolor. A nihil molestiae minima voluptatum.&lt;/span&gt;\n
+                        &lt;/p&gt;\n
+                    &lt;/div&gt;\n
+                &lt;/div&gt;\n
+                &lt;div x-show="isEditing.description" class="relative"&gt;\n
+                    &lt;textarea x-model="editData.description"\n
+                              @keydown.enter.prevent="updateField('description'); isEditing.description = false;"\n
+                              @keydown.escape="cancelEdit('description')"\n
+                              class="w-full h-32 border border-gray-200 rounded-lg p-4 text-sm focus:outline-none focus:border-gray-400 focus:ring-1 focus:ring-gray-400 transition-all duration-200 bg-gray-50/50"\n
+                              placeholder="説明を入力してください..."\n
+                    &gt;&lt;/textarea&gt;\n
+                    &lt;div class="flex justify-end mt-3 space-x-2"&gt;\n
+                        &lt;button @click="cancelEdit('description')"\n
+                                class="px-3.5 py-1.5 text-sm text-gray-600 hover:text-gray-800"&gt;\n
+                            キャンセル\n
+                        &lt;/button&gt;\n
+                        &lt;button @click="updateField('description'); isEditing.description = false;"\n
+                                class="px-3.5 py-1.5 bg-gray-800 hover:bg-gray-900 text-white rounded-lg text-sm"&gt;\n
+                            保存\n
+                        &lt;/button&gt;\n
+                    &lt;/div&gt;\n
+                &lt;/div&gt;\n
+            &lt;/div&gt;\n
+\n
+            &lt;!-- 作成日時と更新日時 --&gt;\n
+            &lt;div class="grid grid-cols-2 gap-4 text-xs text-gray-500 pt-1"&gt;\n
+                &lt;div class="flex items-center"&gt;\n
+                    &lt;i class="fas fa-clock mr-1.5 text-gray-400"&gt;&lt;/i&gt;\n
+                    &lt;span class="font-medium mr-1.5"&gt;作成:&lt;/span&gt;\n
+                    &lt;span class="text-gray-600"&gt;2025/02/10 00:09&lt;/span&gt;\n
+                &lt;/div&gt;\n
+                &lt;div class="flex items-center justify-end"&gt;\n
+                    &lt;i class="fas fa-history mr-1.5 text-gray-400"&gt;&lt;/i&gt;\n
+                    &lt;span class="font-medium mr-1.5"&gt;更新:&lt;/span&gt;\n
+                    &lt;span class="text-gray-600" x-text="formatDateTime(lastUpdated || '2025-02-10T00:09:26.000000Z')"&gt;&lt;/span&gt;\n
+                &lt;/div&gt;\n
+            &lt;/div&gt;\n
+        &lt;/div&gt;\n
+\n
+        &lt;input type="hidden" x-model="lastUpdated" value="2025-02-10T00:09:26.000000Z"&gt;\n
+    &lt;/div&gt;\n
+&lt;/div&gt;\n
+\n
+            &lt;/main&gt;\n
+        &lt;/div&gt;\n
+    &lt;/div&gt;\n
+\n
+    &lt;script&gt;\n
+        document.addEventListener('alpine:init', () =&gt; {\n
+            Alpine.data('notifications', () =&gt; ({\n
+                notifications: [],\n
+                add(notification) {\n
+                    const id = Date.now();\n
+                    this.notifications.push({\n
+                        id,\n
+                        type: notification.type,\n
+                        message: notification.message,\n
+                        show: true\n
+                    });\n
+                    setTimeout(() =&gt; this.remove(id), 3000);\n
+                },\n
+                remove(id) {\n
+                    const index = this.notifications.findIndex(n =&gt; n.id === id);\n
+                    if (index &gt; -1) {\n
+                        this.notifications[index].show = false;\n
+                        setTimeout(() =&gt; {\n
+                            this.notifications = this.notifications.filter(n =&gt; n.id !== id);\n
+                        }, 300);\n
+                    }\n
+                }\n
+            }));\n
+        });\n
+    &lt;/script&gt;\n
+\n
+    &lt;script&gt;\n
+document.addEventListener('alpine:init', () =&gt; {\n
+    Alpine.data('todoEdit', () =&gt; ({\n
+        isEditing: {\n
+            title: false,\n
+            description: false,\n
+            deadline: false,\n
+            status: false,\n
+            tags: false\n
+        },\n
+        editData: {\n
+            title: 'テストTodo',\n
+            description: 'Accusantium id minima eum atque eum cumque et. Quae ut ut minus ut velit placeat quod. Dolores et ipsam nihil est ullam sunt esse dolor. A nihil molestiae minima voluptatum.',\n
+            deadline: '2026-01-19',\n
+            status: 'pending',\n
+            tags: [{"id":2,"name":"\u66f4\u65b0\u5f8c\u306e\u30bf\u30b0\u540d","user_id":10,"created_at":"2025-02-10T00:09:26.000000Z","updated_at":"2025-02-10T00:09:26.000000Z","pivot":{"todo_id":7,"tag_id":2}}],\n
+            selectedTagIds: [2]        },\n
+        availableTags: [{"id":2,"name":"\u66f4\u65b0\u5f8c\u306e\u30bf\u30b0\u540d","user_id":10,"created_at":"2025-02-10T00:09:26.000000Z","updated_at":"2025-02-10T00:09:26.000000Z"}],\n
+        errors: {},\n
+        lastUpdated: '2025-02-10T00:09:26.000000Z',\n
+        updateTimeouts: {},\n
+\n
+        startEdit(field) {\n
+            this.isEditing[field] = true;\n
+            this.errors = {};\n
+            this.$nextTick(() =&gt; {\n
+                const element = this.$el.querySelector(`[x-model="editData.${field}"]`);\n
+                if (element) {\n
+                    element.focus();\n
+                }\n
+            });\n
+        },\n
+\n
+        cancelEdit(field) {\n
+            this.isEditing[field] = false;\n
+            this.errors = {};\n
+            this.editData[field] = this.getOriginalValue(field);\n
+        },\n
+\n
+        getOriginalValue(field) {\n
+            const values = {\n
+                title: 'テストTodo',\n
+                description: 'Accusantium id minima eum atque eum cumque et. Quae ut ut minus ut velit placeat quod. Dolores et ipsam nihil est ullam sunt esse dolor. A nihil molestiae minima voluptatum.',\n
+                deadline: '2026-01-19',\n
+                status: 'pending',\n
+                selectedTagIds: [2]            };\n
+            return values[field] || '';\n
+        },\n
+\n
+        getStatusClasses(status) {\n
+            const classes = {\n
+                completed: 'bg-green-100 text-green-800 hover:bg-green-200',\n
+                in_progress: 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200',\n
+                pending: 'bg-gray-100 text-gray-800 hover:bg-gray-200'\n
+            };\n
+            return classes[status] || classes.pending;\n
+        },\n
+\n
+        async updateField(field) {\n
+            if (this.updateTimeouts[field]) {\n
+                clearTimeout(this.updateTimeouts[field]);\n
+            }\n
+\n
+            this.updateTimeouts[field] = setTimeout(async () =&gt; {\n
+                try {\n
+                    const response = await fetch(`/todos/7/${field}`, {\n
+                        method: 'PATCH',\n
+                        headers: {\n
+                            'Content-Type': 'application/json',\n
+                            'X-CSRF-TOKEN': 'EFbHQ7iA0iVuoPwCm4Is9iwO1BuvrV4gpDq0btbW',\n
+                            'Accept': 'application/json'\n
+                        },\n
+                        body: JSON.stringify({\n
+                            [field]: field === 'tags' ? this.editData.selectedTagIds : this.editData[field],\n
+                            last_updated: this.lastUpdated\n
+                        })\n
+                    });\n
+\n
+                    const data = await response.json();\n
+\n
+                    if (response.ok) {\n
+                        this.isEditing[field] = false;\n
+                        this.errors = {};\n
+                        \n
+                        if (field === 'tags') {\n
+                            this.editData.tags = data.tags;\n
+                        } else if (field === 'status') {\n
+                            const statusDisplay = {\n
+                                'pending': '未対応',\n
+                                'in_progress': '進行中',\n
+                                'completed': '完了'\n
+                            };\n
+                            this.editData.status = data.status;\n
+                            this.$refs.statusDisplay.textContent = statusDisplay[data.status];\n
+                            \n
+                            this.$refs.statusBadge.className = `inline-flex items-center px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${\n
+                                data.status === 'completed' ? 'bg-green-100 text-green-800' :\n
+                                data.status === 'in_progress' ? 'bg-yellow-100 text-yellow-800' :\n
+                                'bg-gray-100 text-gray-800'\n
+                            } hover:opacity-75`;\n
+                        } else if (field === 'deadline') {\n
+                            const date = data.deadline ? new Date(data.deadline) : null;\n
+                            this.$refs.deadlineDisplay.textContent = date \n
+                                ? date.toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric' }) \n
+                                : '設定なし';\n
+                        } else {\n
+                            this.$refs[`${field}Display`].textContent = data[field] || '説明はありません';\n
+                        }\n
+                        \n
+                        this.lastUpdated = data.updated_at;\n
+                        \n
+                        this.$dispatch('notify', {\n
+                            type: 'success',\n
+                            message: '更新しました'\n
+                        });\n
+                    } else if (response.status === 409) {\n
+                        this.errors[field] = data.message;\n
+                        setTimeout(() =&gt; window.location.reload(), 1000);\n
+                    } else if (response.status === 422) {\n
+                        this.errors = data.errors || {};\n
+                    }\n
+                } catch (error) {\n
+                    console.error('Error:', error);\n
+                    this.errors[field] = 'エラーが発生しました。もう一度お試しください。';\n
+                }\n
+            }, 500);\n
+        },\n
+\n
+        formatDateTime(isoString) {\n
+            if (!isoString) return '';\n
+            const date = new Date(isoString);\n
+            return date.toLocaleString('ja-JP', {\n
+                year: 'numeric',\n
+                month: 'long',\n
+                day: 'numeric',\n
+                hour: '2-digit',\n
+                minute: '2-digit'\n
+            });\n
+        },\n
+\n
+        toggleTag(tagId) {\n
+            const index = this.editData.selectedTagIds.indexOf(tagId);\n
+            if (index === -1) {\n
+                this.editData.selectedTagIds.push(tagId);\n
+            } else {\n
+                this.editData.selectedTagIds.splice(index, 1);\n
+            }\n
+            this.updateField('tags');\n
+        }\n
+    }));\n
+});\n
+&lt;/script&gt;\n
+&lt;/body&gt;\n
+&lt;/html&gt; ' [UTF-8](length: 26540) contains "更新後のタグ名" [UTF-8](length: 21).
+
+/Users/ryosuke/Downloads/todo-app/laravel/vendor/laravel/framework/src/Illuminate/Testing/TestResponseAssert.php:45
+/Users/ryosuke/Downloads/todo-app/laravel/vendor/laravel/framework/src/Illuminate/Testing/TestResponse.php:573
+/Users/ryosuke/Downloads/todo-app/laravel/tests/Feature/Tag/TagManagementTest.php:99</failure>
+        </testcase>
+      </testsuite>
+      <testsuite name="Tests\Feature\Todo\TodoLifecycleTest" file="/Users/ryosuke/Downloads/todo-app/laravel/tests/Feature/Todo/TodoLifecycleTest.php" tests="3" assertions="8" errors="0" failures="2" skipped="0" time="0.107287">
+        <testcase name="test_create_todo_with_tags_maintains_recorded_behavior" file="/Users/ryosuke/Downloads/todo-app/laravel/tests/Feature/Todo/TodoLifecycleTest.php" line="29" class="Tests\Feature\Todo\TodoLifecycleTest" classname="Tests.Feature.Todo.TodoLifecycleTest" assertions="2" time="0.014246">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">Tests\Feature\Todo\TodoLifecycleTest::test_create_todo_with_tags_maintains_recorded_behavior
+Failed asserting that two strings are equal.
+
+The following errors occurred during the last request:
+
+The deadline field must be a date after or equal to today.
+
+--- Expected
++++ Actual
+@@ @@
+-'http://localhost/todos'
++'http://localhost'
+
+/Users/ryosuke/Downloads/todo-app/laravel/vendor/laravel/framework/src/Illuminate/Testing/TestResponseAssert.php:45
+/Users/ryosuke/Downloads/todo-app/laravel/vendor/laravel/framework/src/Illuminate/Testing/TestResponse.php:325
+/Users/ryosuke/Downloads/todo-app/laravel/vendor/laravel/framework/src/Illuminate/Testing/TestResponse.php:191
+/Users/ryosuke/Downloads/todo-app/laravel/tests/Feature/Todo/TodoLifecycleTest.php:49</failure>
+        </testcase>
+        <testcase name="test_access_control_for_other_user_todos" file="/Users/ryosuke/Downloads/todo-app/laravel/tests/Feature/Todo/TodoLifecycleTest.php" line="75" class="Tests\Feature\Todo\TodoLifecycleTest" classname="Tests.Feature.Todo.TodoLifecycleTest" assertions="5" time="0.017053"/>
+        <testcase name="test_todo_update_with_transaction_consistency" file="/Users/ryosuke/Downloads/todo-app/laravel/tests/Feature/Todo/TodoLifecycleTest.php" line="105" class="Tests\Feature\Todo\TodoLifecycleTest" classname="Tests.Feature.Todo.TodoLifecycleTest" assertions="1" time="0.075988">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">Tests\Feature\Todo\TodoLifecycleTest::test_todo_update_with_transaction_consistency
+Expected response status code [201, 301, 302, 303, 307, 308] but received 405.
+Failed asserting that false is true.
+
+/Users/ryosuke/Downloads/todo-app/laravel/vendor/laravel/framework/src/Illuminate/Testing/TestResponseAssert.php:45
+/Users/ryosuke/Downloads/todo-app/laravel/vendor/laravel/framework/src/Illuminate/Testing/TestResponse.php:185
+/Users/ryosuke/Downloads/todo-app/laravel/tests/Feature/Todo/TodoLifecycleTest.php:134</failure>
+        </testcase>
+      </testsuite>
+    </testsuite>
+  </testsuite>
+</testsuites>

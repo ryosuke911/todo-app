@@ -10,14 +10,16 @@ class TodoFactory extends Factory
 {
     protected $model = Todo::class;
 
-    public function definition()
+    public function definition(): array
     {
         return [
+            'title' => $this->faker->sentence,
+            'description' => $this->faker->paragraph,
             'user_id' => User::factory(),
-            'title' => $this->faker->sentence(),
-            'description' => $this->faker->paragraph(),
             'status' => $this->faker->randomElement(['pending', 'in_progress', 'completed']),
-            'deadline' => $this->faker->dateTimeBetween('now', '+30 days'),
+            'deadline' => $this->faker->dateTimeBetween('now', '+1 year'),
+            'created_at' => now(),
+            'updated_at' => now(),
         ];
     }
 } 
