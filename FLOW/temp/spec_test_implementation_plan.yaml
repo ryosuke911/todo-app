@@ -1,0 +1,247 @@
+implementation_plan:
+  # サービス層の実装（優先）
+  service_tests:
+    - id: "auth_service_register"
+      priority: 1
+      source_file: "app/Services/AuthService.php"
+      required_data: []
+      dependencies: []
+      implementation_notes: "ユーザー登録サービスの基本機能検証"
+
+    - id: "todo_service_get_todos"
+      priority: 2
+      source_file: "app/Services/TodoService.php"
+      required_data:
+        - "test_user"
+        - "sample_todos"
+        - "sample_tags"
+      dependencies:
+        - "auth_service_register"
+      implementation_notes: "タスク一覧取得サービスの検証"
+
+  # ポリシー層の実装
+  policy_tests:
+    - id: "todo_policy_update"
+      priority: 3
+      source_file: "app/Policies/TodoPolicy.php"
+      required_data:
+        - "test_user"
+        - "sample_todo"
+      dependencies:
+        - "todo_service_get_todos"
+      implementation_notes: "タスク更新ポリシーの検証"
+
+    - id: "tag_policy_base"
+      priority: 4
+      source_file: "app/Policies/TagPolicy.php"
+      required_data:
+        - "test_user"
+        - "sample_tag"
+      dependencies:
+        - "todo_policy_update"
+      implementation_notes: "タグ操作ポリシーの基本機能検証"
+
+  # コントローラー層の実装
+  auth_tests:
+    - id: "auth_register_basic"
+      priority: 5
+      source_file: "app/Http/Controllers/AuthController.php"
+      recorded_behavior: "AuthController.register.basic"
+      required_data: []
+      dependencies:
+        - "auth_service_register"
+      implementation_notes: "基本的なユーザー登録フローの検証"
+
+  # Todoフロー
+  todo_tests:
+    - id: "todo_index_filtered"
+      priority: 6
+      source_file: "app/Http/Controllers/TodoController.php"
+      recorded_behavior: "TodoController.index.filtered_list"
+      required_data:
+        - "test_user"
+        - "sample_todos"
+        - "sample_tags"
+      dependencies:
+        - "auth_register_basic"
+      implementation_notes: "フィルター付きタスク一覧の表示検証"
+
+    - id: "todo_update_status"
+      priority: 7
+      source_file: "app/Http/Controllers/TodoController.php"
+      recorded_behavior: "TodoController.updateStatus.basic"
+      required_data:
+        - "test_user"
+        - "sample_todo"
+      dependencies:
+        - "todo_index_filtered"
+      implementation_notes: "タスクステータス更新の基本フロー検証"
+
+    - id: "todo_update_status_conflict"
+      priority: 8
+      source_file: "app/Http/Controllers/TodoController.php"
+      recorded_behavior: "TodoController.updateStatus.version_conflict"
+      required_data:
+        - "test_user"
+        - "sample_todo"
+      dependencies:
+        - "todo_update_status"
+      implementation_notes: "楽観的ロックによる競合の検証"
+
+    - id: "todo_store_basic"
+      priority: 10
+      source_file: "app/Http/Controllers/TodoController.php"
+      recorded_behavior: "TodoController.store.basic"
+      required_data:
+        - "test_user"
+        - "sample_tags"
+      dependencies:
+        - "todo_index_filtered"
+      implementation_notes: "基本的なタスク作成フローの検証"
+
+    - id: "todo_store_deadline_validation"
+      priority: 11
+      source_file: "app/Http/Controllers/TodoController.php"
+      recorded_behavior: "TodoController.store.deadline_validation"
+      required_data:
+        - "test_user"
+        - "sample_tags"
+      dependencies:
+        - "todo_store_basic"
+      implementation_notes: "過去の期限によるバリデーション検証"
+
+    - id: "todo_update_basic"
+      priority: 12
+      source_file: "app/Http/Controllers/TodoController.php"
+      recorded_behavior: "TodoController.update.basic"
+      required_data:
+        - "test_user"
+        - "sample_todo"
+        - "sample_tags"
+      dependencies:
+        - "todo_store_basic"
+      implementation_notes: "基本的なタスク更新フローの検証"
+
+    - id: "todo_update_deadline_validation"
+      priority: 13
+      source_file: "app/Http/Controllers/TodoController.php"
+      recorded_behavior: "TodoController.update.deadline_validation"
+      required_data:
+        - "test_user"
+        - "sample_todo"
+      dependencies:
+        - "todo_update_basic"
+      implementation_notes: "タスク更新時の期限バリデーション検証"
+
+  # タグフロー
+  tag_tests:
+    - id: "tag_store_basic"
+      priority: 9
+      source_file: "app/Http/Controllers/TagController.php"
+      recorded_behavior: "TagController.store.basic"
+      required_data:
+        - "test_user"
+      dependencies:
+        - "auth_register_basic"
+      implementation_notes: "基本的なタグ作成フローの検証"
+
+    - id: "tag_store_duplicate"
+      priority: 14
+      source_file: "app/Http/Controllers/TagController.php"
+      recorded_behavior: "TagController.store.duplicate_name"
+      required_data:
+        - "test_user"
+        - "existing_tag"
+      dependencies:
+        - "tag_store_basic"
+      implementation_notes: "重複タグ名のバリデーション検証"
+
+    - id: "tag_update_basic"
+      priority: 15
+      source_file: "app/Http/Controllers/TagController.php"
+      recorded_behavior: "TagController.update.basic"
+      required_data:
+        - "test_user"
+        - "sample_tag"
+      dependencies:
+        - "tag_store_basic"
+      implementation_notes: "基本的なタグ更新フローの検証"
+
+    - id: "tag_destroy_basic"
+      priority: 16
+      source_file: "app/Http/Controllers/TagController.php"
+      recorded_behavior: "TagController.destroy.basic"
+      required_data:
+        - "test_user"
+        - "sample_tag"
+      dependencies:
+        - "tag_update_basic"
+      implementation_notes: "基本的なタグ削除フローの検証"
+
+  # データ準備計画
+  test_data:
+    seeders:
+      - id: "TestDataSeeder"
+        provides:
+          - "test_user"
+          - "sample_todos"
+          - "sample_tags"
+        implementation_notes: "テストデータの一括準備用シーダー"
+
+    factories:
+      - id: "UserFactory"
+        provides:
+          - "test_user"
+          - "existing_user"
+      - id: "TodoFactory"
+        provides:
+          - "sample_todo"
+          - "sample_todos"
+      - id: "TagFactory"
+        provides:
+          - "sample_tag"
+          - "existing_tag"
+          - "sample_tags"
+
+  # 実装順序の技術的制約
+  technical_constraints:
+    database:
+      tables_required:
+        - "users"
+        - "todos"
+        - "tags"
+        - "todo_tag"
+    
+    authentication:
+      middleware: "auth"
+      guards: ["web"]
+    
+    validation:
+      custom_rules: []
+      form_requests:
+        - "TodoRequest"
+        - "TagRequest"
+
+  # 認証関連のテスト
+  unauthorized_tests:
+    - id: "todo_unauthorized"
+      priority: 17
+      source_file: "app/Http/Controllers/TodoController.php"
+      recorded_behaviors: 
+        - "TodoController.index.unauthorized"
+        - "TodoController.store.unauthorized"
+        - "TodoController.update.unauthorized"
+      required_data: []
+      dependencies: []
+      implementation_notes: "未認証時のTodo操作の検証"
+
+    - id: "tag_unauthorized"
+      priority: 18
+      source_file: "app/Http/Controllers/TagController.php"
+      recorded_behaviors:
+        - "TagController.store.unauthorized"
+        - "TagController.update.unauthorized"
+        - "TagController.destroy.unauthorized"
+      required_data: []
+      dependencies: []
+      implementation_notes: "未認証時のTag操作の検証" 
