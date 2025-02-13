@@ -1,0 +1,231 @@
+targets:
+  - id: "auth_flow"
+    priority: 1
+    source_file: "app/Http/Controllers/AuthController.php"
+    test_cases:
+      - name: "basic_registration"
+        type: "feature"
+        priority: "high"
+        dependencies: []
+        expected_behavior:
+          input:
+            name: "テストユーザー"
+            email: "test2@example.com"
+            password: "password123"
+            password_confirmation: "password123"
+          result:
+            status: 302
+            redirect_to: "/todos"
+            database_changes:
+              users:
+                - operation: "insert"
+      - name: "duplicate_email"
+        type: "feature"
+        priority: "high"
+        dependencies: ["basic_registration"]
+        expected_behavior:
+          input:
+            name: "テストユーザー2"
+            email: "test@example.com"
+            password: "password123"
+            password_confirmation: "password123"
+          result:
+            status: 422
+            validation_errors:
+              - field: "email"
+                message: "The email has already been taken."
+
+  - id: "todo_management"
+    priority: 2
+    source_file: "app/Http/Controllers/TodoController.php"
+    test_cases:
+      - name: "filtered_list"
+        type: "feature"
+        priority: "high"
+        dependencies: ["auth_flow"]
+        expected_behavior:
+          input:
+            filter: "not_completed"
+            search: "テスト"
+            tag_id: 1
+          result:
+            status: 200
+            view: "todos.index"
+            data:
+              todos:
+                type: "LengthAwarePaginator"
+                total: 1
+                per_page: 10
+      - name: "status_update"
+        type: "feature"
+        priority: "high"
+        dependencies: ["filtered_list"]
+        expected_behavior:
+          input:
+            todo_id: 1
+            status: "in_progress"
+            last_updated: "2025-02-13 23:59:44"
+          result:
+            status: 200
+            response:
+              status: "in_progress"
+              updated_at: "updated_timestamp"
+      - name: "version_conflict"
+        type: "feature"
+        priority: "high"
+        dependencies: ["status_update"]
+        expected_behavior:
+          input:
+            todo_id: 1
+            status: "completed"
+            last_updated: "old_timestamp"
+          result:
+            status: 409
+            error: "Version conflict detected"
+
+  - id: "tag_management"
+    priority: 3
+    source_file: "app/Http/Controllers/TagController.php"
+    test_cases:
+      - name: "basic_creation"
+        type: "feature"
+        priority: "medium"
+        dependencies: ["auth_flow"]
+        expected_behavior:
+          input:
+            name: "テストタグ"
+          result:
+            status: 302
+            redirect_to: "/tags"
+            database_changes:
+              tags:
+                - operation: "insert"
+      - name: "duplicate_name"
+        type: "feature"
+        priority: "medium"
+        dependencies: ["basic_creation"]
+        expected_behavior:
+          input:
+            name: "テストタグ"
+          result:
+            status: 422
+            validation_errors:
+              - field: "name"
+                message: "The name has already been taken."
+      - name: "todo_tag_association"
+        type: "feature"
+        priority: "medium"
+        dependencies: ["basic_creation"]
+        expected_behavior:
+          input:
+            todo_id: 1
+            tag_ids: [1]
+          result:
+            status: 200
+            database_changes:
+              todo_tag:
+                - operation: "insert"
+
+  - id: "dashboard_statistics"
+    priority: 4
+    source_file: "app/Http/Controllers/DashboardController.php"
+    test_cases:
+      - name: "with_data"
+        type: "feature"
+        priority: "medium"
+        dependencies: ["todo_management", "tag_management"]
+        expected_behavior:
+          result:
+            status: 200
+            view: "dashboard.index"
+            data:
+              statistics:
+                total: 4
+                in_progress: 1
+                completed: 1
+                overdue: 3
+              progressChart:
+                type: "doughnut"
+              tagStatistics:
+                type: "bar"
+              dailyTaskCreation:
+                type: "line"
+                period: "last_14_days"
+      - name: "no_data"
+        type: "feature"
+        priority: "low"
+        dependencies: ["with_data"]
+        expected_behavior:
+          result:
+            status: 200
+            view: "dashboard.index"
+            data:
+              statistics:
+                total: 0
+                in_progress: 0
+                completed: 0
+                overdue: 0
+
+implementation_order:
+  - phase: 1
+    components:
+      - "AuthController"
+      - "AuthService"
+    tests: ["basic_registration", "duplicate_email"]
+    
+  - phase: 2
+    components:
+      - "TodoController"
+      - "TodoService"
+      - "TodoPolicy"
+    tests: ["filtered_list", "status_update", "version_conflict"]
+    
+  - phase: 3
+    components:
+      - "TagController"
+      - "TagService"
+    tests: ["basic_creation", "duplicate_name", "todo_tag_association"]
+    
+  - phase: 4
+    components:
+      - "DashboardController"
+      - "DashboardService"
+    tests: ["with_data", "no_data"]
+
+validation_rules:
+  auth:
+    name: "required|string|max:255"
+    email: "required|string|email|max:255|unique:users"
+    password: "required|string|min:8|confirmed"
+  
+  todo:
+    title: "required|string|max:255"
+    description: "nullable|string"
+    status: "required|in:pending,in_progress,completed"
+    deadline: "nullable|date"
+    last_updated: "required|date_format:Y-m-d H:i:s"
+  
+  tag:
+    name: "required|string|max:255|unique:tags"
+
+security_checks:
+  - type: "authentication"
+    scope: ["all_routes_except_login_register"]
+  - type: "authorization"
+    scope: ["todo_operations", "tag_operations"]
+  - type: "version_control"
+    scope: ["todo_status_update"]
+    implementation:
+      - field: "last_updated"
+      - check: "timestamp_comparison"
+      - conflict_response: 409
+
+performance_optimizations:
+  - type: "eager_loading"
+    scope: ["todos_with_tags", "dashboard_statistics"]
+  - type: "pagination"
+    scope: ["todo_list", "tag_list"]
+  - type: "caching"
+    scope: ["dashboard_charts"]
+  - type: "query_optimization"
+    scope: ["dashboard_statistics", "daily_task_creation"] 

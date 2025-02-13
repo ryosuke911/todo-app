@@ -1,0 +1,250 @@
+recorded_behaviors:
+  AuthController.register:
+    test_cases:
+      basic:
+        execution:
+          executed_at: "2025-02-13 23:47:30"
+          status: completed
+        
+        input:
+          name: "テストユーザー"
+          email: "test2@example.com"
+          password: "password123"
+          password_confirmation: "password123"
+        
+        result:
+          status: 302  # リダイレクトステータスコード
+          redirect_to: "/todos"
+          database_changes:
+            users:
+              - operation: "insert"
+                record:
+                  id: 3
+                  name: "テストユーザー"
+                  email: "test2@example.com"
+                  created_at: "2025-02-13 14:47:31"
+      duplicate_email:
+        execution:
+          executed_at: "2025-02-13 23:48:57"
+          status: completed
+        
+        input:
+          name: "テストユーザー2"
+          email: "test@example.com"
+          password: "password123"
+          password_confirmation: "password123"
+        
+        result:
+          status: 422  # バリデーションエラーステータスコード
+          validation_errors: 
+            - field: "email"
+              message: "The email has already been taken."
+          database_changes: null  # データベースの変更なし
+
+  TodoController.index:
+    test_cases:
+      filtered_list:
+        execution:
+          executed_at: "2025-02-13 23:54:11"
+          status: completed
+        
+        input:
+          filter: "not_completed"
+          search: "テスト"
+          tag_id: 1
+        
+        result:
+          status: 200
+          view: todos.index
+          data:
+            todos:
+              type: LengthAwarePaginator
+              total: 1
+              per_page: 10
+              items:
+                - id: 1
+                  title: "テストタスク1"
+                  description: "テスト説明1"
+                  status: "pending"
+                  deadline: "2024-03-25"
+                  tags: 
+                    - id: 1
+                      name: "work"
+            tags:
+              type: Collection
+              items:
+                - id: 1
+                  name: "work"
+                - id: 2
+                  name: "personal"
+      unauthorized:
+        execution:
+          executed_at: "2025-02-13 23:56:48"
+          status: completed
+        
+        result:
+          status: 302  # リダイレクトステータスコード
+          redirect_to: "/login"
+          message: "Unauthenticated."
+
+  TodoController.updateStatus:
+    test_cases:
+      basic:
+        execution:
+          executed_at: "2025-02-14 00:06:32"
+          status: completed
+        
+        input:
+          todo_id: 1
+          status: "in_progress"
+          last_updated: "2025-02-13 23:59:44"  # 変更前のupdated_at
+        
+        result:
+          status: 200
+          response:
+            id: 1
+            status: "in_progress"
+            updated_at: "2025-02-14 00:06:32"  # 変更後のupdated_at
+          database_changes:
+            todos:
+              - operation: "update"
+                record:
+                  id: 1
+                  status: "in_progress"
+                  updated_at: "2025-02-14 00:06:32"
+      version_conflict:
+        execution:
+          executed_at: "2025-02-14 00:11:05"
+          status: completed
+        
+        input:
+          todo_id: 1
+          status: "completed"
+          last_updated: "2025-02-14 00:06:32"  # 古いタイムスタンプ
+        
+        result:
+          status: 200  # 期待に反して成功
+          response:
+            id: 1
+            status: "completed"
+            updated_at: "2025-02-14 00:11:05"
+          note: "楽観的ロックが機能していない可能性あり - 古いタイムスタンプでの更新が成功"
+
+  DashboardController.index:
+    test_cases:
+      with_data:
+        execution:
+          executed_at: "2025-02-14 00:14:36"
+          status: completed
+        
+        result:
+          status: 200
+          view: dashboard.index
+          data:
+            statistics:
+              total: 4
+              in_progress: 1
+              completed: 1
+              overdue: 3
+            
+            progressChart:
+              type: "doughnut"
+              data:
+                - label: "進行中"
+                  value: 1
+                  color: "blue"
+                - label: "完了"
+                  value: 1
+                  color: "green"
+                - label: "期限超過"
+                  value: 3
+                  color: "red"
+            
+            tagStatistics:
+              type: "bar"
+              data:
+                - name: "work"
+                  count: 1
+                - name: "personal"
+                  count: 1
+            
+            upcomingDeadlines:
+              type: "Collection"
+              model: "Todo"
+              items: []  # 期限設定されたタスクなし
+            
+            dailyTaskCreation:
+              type: "line"
+              period: "last_14_days"
+              data:
+                labels: ["2025-01-31", "2025-02-01", "2025-02-02", "2025-02-03", "2025-02-04", "2025-02-05", "2025-02-06", "2025-02-07", "2025-02-08", "2025-02-09", "2025-02-10", "2025-02-11", "2025-02-12", "2025-02-13"]
+                values: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4]
+
+      no_data:
+        execution:
+          executed_at: "2025-02-14 00:17:05"
+          status: completed
+        
+        result:
+          status: 200
+          view: dashboard.index
+          data:
+            statistics:
+              total: 0
+              in_progress: 0
+              completed: 0
+              overdue: 0
+            
+            progressChart:
+              type: "doughnut"
+              data: []  # データなし
+            
+            tagStatistics:
+              type: "bar"
+              data: []  # データなし
+            
+            upcomingDeadlines:
+              type: "Collection"
+              model: "Todo"
+              items: []  # データなし
+            
+            dailyTaskCreation:
+              type: "line"
+              period: "last_14_days"
+              data:
+                labels: ["2025-01-31", "2025-02-01", "2025-02-02", "2025-02-03", "2025-02-04", "2025-02-05", "2025-02-06", "2025-02-07", "2025-02-08", "2025-02-09", "2025-02-10", "2025-02-11", "2025-02-12", "2025-02-13"]
+                values: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+  TagController:
+    test_cases:
+      basic:
+        execution:
+          executed_at: "2025-02-14 00:19:06"
+          status: completed
+        
+        input:
+          name: "テストタグ"
+        
+        result:
+          status: 302  # リダイレクトステータスコード
+          redirect_to: "/tags"
+          database_changes:
+            tags:
+              - operation: "insert"
+                record:
+                  name: "テストタグ"
+                  user_id: 1  # テストユーザーのID
+      duplicate_name:
+        execution:
+          executed_at: "2025-02-14 00:20:51"
+          status: completed
+        
+        input:
+          name: "テストタグ"  # 既存のタグ名
+        
+        result:
+          status: 422  # バリデーションエラーステータスコード
+          validation_errors:
+            - field: "name"
+              message: "The name has already been taken."
+          database_changes: null  # データベースの変更なし
