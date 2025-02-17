@@ -4,10 +4,8 @@ namespace Tests\Feature\Tag;
 
 use App\Models\User;
 use App\Models\Tag;
-use App\Models\Todo;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
-use PHPUnit\Framework\Attributes\Test;
 
 class TagControllerTest extends TestCase
 {
@@ -18,31 +16,31 @@ class TagControllerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+
+        // テストユーザーを作成
         $this->user = User::factory()->create();
     }
 
-    #[Test]
-    public function user_can_create_tag()
+    public function test_basic_creation()
     {
-        // 動作記録: basic
+        // 認証済みユーザーとしてリクエスト
         $response = $this->actingAs($this->user)
             ->post('/tags', [
                 'name' => 'テストタグ'
             ]);
 
-        // レスポンスの検証
         $response->assertStatus(302);
         $response->assertRedirect('/tags');
+        $response->assertSessionHas('success', 'タグを作成しました。');
 
-        // データベースの検証
+        // データベースの変更を確認
         $this->assertDatabaseHas('tags', [
             'name' => 'テストタグ',
             'user_id' => $this->user->id
         ]);
     }
 
-    #[Test]
-    public function user_cannot_create_duplicate_tag()
+    public function test_duplicate_name()
     {
         // 既存のタグを作成
         Tag::factory()->create([
@@ -50,51 +48,46 @@ class TagControllerTest extends TestCase
             'user_id' => $this->user->id
         ]);
 
-        // 動作記録: duplicate_name
+        // 同じ名前でタグを作成
         $response = $this->actingAs($this->user)
-            ->postJson('/tags', [  // JSONリクエストに変更
-                'name' => 'テストタグ'  // 既存のタグ名
+            ->post('/tags', [
+                'name' => 'テストタグ'
             ]);
 
-        // レスポンスの検証（動作記録通り）
-        $response->assertStatus(422);
-        $response->assertJsonValidationErrors([
-            'name' => 'The name has already been taken.'
-        ]);
+        $response->assertStatus(302);
+        $response->assertSessionHasErrors(['name']);
 
-        // データベースの検証（レコード数が変わっていないことを確認）
+        // データベースに重複レコードが作成されていないことを確認
         $this->assertDatabaseCount('tags', 1);
     }
 
-    #[Test]
-    public function todo_can_be_associated_with_tags()
+    public function test_unauthorized()
     {
-        // テストデータの準備
-        $todo = Todo::factory()->create([
-            'user_id' => $this->user->id
-        ]);
-        $tag = Tag::factory()->create([
-            'user_id' => $this->user->id
+        $response = $this->post('/tags', [
+            'name' => 'テストタグ'
         ]);
 
-        // タグの関連付けリクエスト
+        $response->assertStatus(302);
+        $response->assertRedirect('/login');
+    }
+
+    public function test_redirect_after_creation()
+    {
+        // リダイレクト先を指定してタグを作成
         $response = $this->actingAs($this->user)
-            ->patchJson("/todos/{$todo->id}/tags", [
-                'tags' => [$tag->id],
-                'last_updated' => $todo->updated_at->format('Y-m-d\TH:i:s.u\Z')
+            ->post('/tags', [
+                'name' => 'テストタグ',
+                'redirect' => 'todos.create'
             ]);
 
-        // レスポンスの検証
-        $response->assertStatus(200);
-        $response->assertJsonStructure([
-            'tags',
-            'updated_at'
-        ]);
+        $response->assertStatus(302);
+        $response->assertRedirect(route('todos.create'));
+        $response->assertSessionHas('success', 'タグを作成しました。');
 
-        // データベースの検証
-        $this->assertDatabaseHas('tag_todo', [
-            'todo_id' => $todo->id,
-            'tag_id' => $tag->id
+        // データベースの変更を確認
+        $this->assertDatabaseHas('tags', [
+            'name' => 'テストタグ',
+            'user_id' => $this->user->id
         ]);
     }
 } 

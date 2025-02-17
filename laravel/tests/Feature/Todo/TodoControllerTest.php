@@ -7,114 +7,162 @@ use App\Models\Todo;
 use App\Models\Tag;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
-use PHPUnit\Framework\Attributes\Test;
+use Illuminate\Support\Carbon;
 
 class TodoControllerTest extends TestCase
 {
     use RefreshDatabase;
 
     private User $user;
+    private Tag $workTag;
+    private Tag $personalTag;
 
     protected function setUp(): void
     {
         parent::setUp();
+
+        // テストユーザーを作成
         $this->user = User::factory()->create();
+
+        // タグを作成
+        $this->workTag = Tag::factory()->create([
+            'name' => 'work',
+            'user_id' => $this->user->id
+        ]);
+
+        $this->personalTag = Tag::factory()->create([
+            'name' => 'personal',
+            'user_id' => $this->user->id
+        ]);
     }
 
-    #[Test]
-    public function user_can_view_filtered_todo_list()
+    public function test_filtered_list()
     {
-        // テストデータの準備
-        $tag = Tag::factory()->create(['user_id' => $this->user->id]);
+        // テストタスクを作成
         $todo = Todo::factory()->create([
-            'user_id' => $this->user->id,
             'title' => 'テストタスク1',
             'description' => 'テスト説明1',
-            'status' => 'pending'
+            'status' => 'pending',
+            'deadline' => '2024-03-25',
+            'user_id' => $this->user->id
         ]);
-        $todo->tags()->attach($tag->id);
+
+        // タグを関連付け
+        $todo->tags()->attach($this->workTag->id);
 
         // 認証済みユーザーとしてリクエスト
         $response = $this->actingAs($this->user)
             ->get('/todos?' . http_build_query([
                 'filter' => 'not_completed',
                 'search' => 'テスト',
-                'tag_id' => $tag->id
+                'tag_id' => $this->workTag->id
             ]));
 
-        // レスポンスの検証
         $response->assertStatus(200);
         $response->assertViewIs('todos.index');
-        $response->assertViewHas('todos');
+        
+        // Todoデータの検証
+        $response->assertViewHas('todos', function ($todos) use ($todo) {
+            return $todos->total() === 1 &&
+                   $todos->perPage() === 10 &&
+                   $todos->first()->id === $todo->id &&
+                   $todos->first()->title === 'テストタスク1';
+        });
 
-        // データの検証
-        $todos = $response->viewData('todos');
-        $this->assertEquals(1, $todos->total());
-        $this->assertEquals('テストタスク1', $todos->items()[0]->title);
+        // タグデータの検証
+        $response->assertViewHas('tags', function ($tags) {
+            return $tags->count() === 2 &&
+                   $tags->contains('name', 'work') &&
+                   $tags->contains('name', 'personal');
+        });
     }
 
-    #[Test]
-    public function user_can_update_todo_status()
+    public function test_unauthorized()
     {
-        // テストデータの準備
+        $response = $this->get('/todos');
+
+        $response->assertStatus(302);
+        $response->assertRedirect('/login');
+    }
+
+    public function test_status_update()
+    {
+        // テストタスクを作成
         $todo = Todo::factory()->create([
+            'title' => 'テストタスク1',
+            'status' => 'pending',
             'user_id' => $this->user->id,
-            'status' => 'pending'
+            'updated_at' => now()->subMinute() // 1分前の時刻を設定
         ]);
 
-        // ステータス更新リクエスト
+        // 現在のタイムスタンプを取得
+        $currentTimestamp = $todo->updated_at->toISOString();
+
+        // 認証済みユーザーとしてリクエスト
         $response = $this->actingAs($this->user)
-            ->patch("/todos/{$todo->id}/status", [
+            ->patchJson("/todos/{$todo->id}/status", [
                 'status' => 'in_progress',
-                'last_updated' => $todo->updated_at->toISOString()
+                'last_updated' => $currentTimestamp
             ]);
 
-        // レスポンスの検証
         $response->assertStatus(200);
-        $response->assertJson([
-            'status' => 'in_progress'
+        $response->assertJsonStructure([
+            'status',
+            'updated_at'
         ]);
 
-        // データベースの検証
+        $responseData = $response->json();
+        
+        // レスポンスの内容を検証
+        $this->assertEquals('in_progress', $responseData['status']);
+        $this->assertNotEquals($currentTimestamp, $responseData['updated_at']);
+
+        // データベースの更新を確認
         $this->assertDatabaseHas('todos', [
             'id' => $todo->id,
             'status' => 'in_progress'
         ]);
+
+        // データベースのタイムスタンプが更新されていることを確認
+        $updatedTodo = $todo->fresh();
+        $this->assertEquals($responseData['updated_at'], $updatedTodo->updated_at->toISOString());
     }
 
-    #[Test]
-    public function version_conflict_is_detected_when_updating_todo_status()
+    public function test_version_conflict()
     {
-        // テストデータの準備
+        // テストタスクを作成
         $todo = Todo::factory()->create([
+            'title' => 'テストタスク1',
+            'status' => 'pending',
             'user_id' => $this->user->id,
-            'status' => 'pending'
+            'updated_at' => now() // 現在時刻を設定
         ]);
 
-        // 古いタイムスタンプを保存（フォーマットを Y-m-d\TH:i:s.u\Z に変更）
-        $oldTimestamp = $todo->updated_at->format('Y-m-d\TH:i:s.u\Z');
+        // 古いタイムスタンプを設定（1時間前）
+        $oldTimestamp = $todo->updated_at->copy()->subHour()->toISOString();
 
-        // 別のプロセスでの更新をシミュレート
-        $todo->update(['status' => 'in_progress']);
-
-        // 古いタイムスタンプでの更新を試行
+        // 認証済みユーザーとしてリクエスト
         $response = $this->actingAs($this->user)
             ->patchJson("/todos/{$todo->id}/status", [
                 'status' => 'completed',
                 'last_updated' => $oldTimestamp
             ]);
 
-        // 動作記録: 期待に反して成功
-        $response->assertStatus(200);
-        $response->assertJson([
-            'status' => 'completed',
-            'updated_at' => $todo->fresh()->updated_at->toISOString()
+        $response->assertStatus(409);
+        $response->assertJsonStructure([
+            'message',
+            'updated_at'
         ]);
 
-        // データベースの状態を確認
+        // データベースが更新されていないことを確認
         $this->assertDatabaseHas('todos', [
             'id' => $todo->id,
-            'status' => 'completed'
+            'status' => 'pending'
+        ]);
+
+        // エラーメッセージの確認
+        $response->assertJson([
+            'message' => 'データが古くなっています。再度読み込んでください。'
         ]);
     }
 } 
