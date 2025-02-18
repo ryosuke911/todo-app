@@ -1,0 +1,302 @@
+dependency_analysis_report:
+  components:
+    - component_id: "app/Http/Controllers/TodoController.php"
+      metrics:
+        coupling:
+          score: 0.85
+          level: "HIGH"
+          direct_dependencies: 6
+          indirect_dependencies: 3
+          circular_dependencies: true
+        cohesion:
+          score: 0.75
+          responsibility_focus: 0.85
+      
+      characteristics:
+        global_state: false
+        singleton_usage: false
+        static_methods: false
+        external_services: true
+        parameter_complexity: "HIGH"
+      
+      layer_info:
+        type: "CONTROLLER"
+        violations:
+          - "トランザクション処理の複雑性"
+          - "楽観的ロックの実装が複雑"
+          - "バリデーション処理の重複"
+
+    - component_id: "app/Http/Controllers/TagController.php"
+      metrics:
+        coupling:
+          score: 0.65
+          level: "MEDIUM"
+          direct_dependencies: 5
+          indirect_dependencies: 2
+          circular_dependencies: false
+        cohesion:
+          score: 0.80
+          responsibility_focus: 0.85
+      
+      characteristics:
+        global_state: false
+        singleton_usage: false
+        static_methods: false
+        external_services: false
+        parameter_complexity: "LOW"
+      
+      layer_info:
+        type: "CONTROLLER"
+        violations:
+          - "サービス層の未使用"
+
+    - component_id: "app/Http/Controllers/AuthController.php"
+      metrics:
+        coupling:
+          score: 0.70
+          level: "MEDIUM"
+          direct_dependencies: 7
+          indirect_dependencies: 2
+          circular_dependencies: false
+        cohesion:
+          score: 0.85
+          responsibility_focus: 0.90
+      
+      characteristics:
+        global_state: false
+        singleton_usage: false
+        static_methods: false
+        external_services: true
+        parameter_complexity: "LOW"
+      
+      layer_info:
+        type: "CONTROLLER"
+        violations: []
+
+    - component_id: "app/Http/Controllers/DashboardController.php"
+      metrics:
+        coupling:
+          score: 0.65
+          level: "MEDIUM"
+          direct_dependencies: 3
+          indirect_dependencies: 5
+          circular_dependencies: false
+        cohesion:
+          score: 0.90
+          responsibility_focus: 0.95
+      
+      characteristics:
+        global_state: false
+        singleton_usage: false
+        static_methods: false
+        external_services: true
+        parameter_complexity: "HIGH"
+      
+      layer_info:
+        type: "CONTROLLER"
+        violations:
+          - "複雑な集計ロジックの存在"
+
+    - component_id: "app/Services/AuthService.php"
+      metrics:
+        coupling:
+          score: 0.55
+          level: "LOW"
+          direct_dependencies: 4
+          indirect_dependencies: 0
+          circular_dependencies: false
+        cohesion:
+          score: 0.95
+          responsibility_focus: 0.95
+      
+      characteristics:
+        global_state: false
+        singleton_usage: false
+        static_methods: false
+        external_services: false
+        parameter_complexity: "MEDIUM"
+      
+      layer_info:
+        type: "SERVICE"
+        violations: []
+        security_features:
+          - "パスワードハッシュ化"
+          - "パスワード強度検証"
+          - "トークン管理"
+          - "リメンバートークン生成"
+
+    - component_id: "app/Services/TodoService.php"
+      metrics:
+        coupling:
+          score: 0.70
+          level: "MEDIUM"
+          direct_dependencies: 4
+          indirect_dependencies: 2
+          circular_dependencies: false
+        cohesion:
+          score: 0.85
+          responsibility_focus: 0.90
+      
+      characteristics:
+        global_state: false
+        singleton_usage: false
+        static_methods: false
+        external_services: false
+        parameter_complexity: "MEDIUM"
+      
+      layer_info:
+        type: "SERVICE"
+        violations:
+          - "バリデーションロジックの混在"
+
+    - component_id: "app/Services/DashboardService.php"
+      metrics:
+        coupling:
+          score: 0.75
+          level: "MEDIUM"
+          direct_dependencies: 5
+          indirect_dependencies: 2
+          circular_dependencies: false
+        cohesion:
+          score: 0.85
+          responsibility_focus: 0.90
+      
+      characteristics:
+        global_state: false
+        singleton_usage: false
+        static_methods: false
+        external_services: true
+        parameter_complexity: "HIGH"
+      
+      layer_info:
+        type: "SERVICE"
+        violations:
+          - "複雑なクエリロジック"
+        optimizations:
+          - "クエリの最適化（withCount使用）"
+          - "日付範囲の効率的な処理"
+          - "集計処理の最適化"
+
+  services:
+    AuthService:
+      dependencies:
+        direct: ["User", "Hash", "Password", "Str"]
+      features:
+        - "ユーザー登録"
+        - "パスワードリセット"
+        - "パスワード検証"
+        - "パスワード更新"
+      security:
+        - "パスワードハッシュ化"
+        - "トークン管理"
+        - "バリデーション"
+      metrics:
+        coupling_score: 0.60
+        cohesion_score: 0.95
+        reasons:
+          coupling:
+            - "必要最小限の外部依存"
+            - "認証関連の集約"
+          cohesion:
+            - "認証処理に特化"
+            - "責務の明確な分離"
+
+    TodoService:
+      dependencies:
+        direct: ["Todo", "Collection", "LengthAwarePaginator", "ValidationException"]
+        indirect: ["Tag", "User", "Auth"]
+      features:
+        - "タスクのCRUD操作"
+        - "フィルタリング"
+        - "ページネーション"
+        - "バリデーション"
+      validation:
+        - "タイトル必須チェック"
+        - "期限の日付形式チェック"
+        - "期限の未来日付チェック"
+      metrics:
+        coupling_score: 0.75
+        cohesion_score: 0.85
+        reasons:
+          coupling:
+            - "複数のモデルへの依存"
+            - "バリデーション処理の分散"
+          cohesion:
+            - "タスク管理に特化"
+            - "一貫したインターフェース"
+
+    DashboardService:
+      dependencies:
+        direct: ["Todo", "Tag", "Carbon", "DB", "Collection"]
+      features:
+        - "タスク統計情報"
+        - "進捗状況グラフ"
+        - "タグ統計"
+        - "期限管理"
+        - "日別集計"
+      performance:
+        - "クエリの最適化"
+        - "データの集計処理"
+        - "結果のキャッシュ"
+      metrics:
+        coupling_score: 0.70
+        cohesion_score: 0.80
+        reasons:
+          coupling:
+            - "複数のモデルへの依存"
+            - "DB操作への直接的な依存"
+          cohesion:
+            - "統計処理に特化"
+            - "データ集計の一元管理"
+
+  issues:
+    circular_dependencies:
+      - components: ["TodoController", "TodoService", "Todo"]
+        severity: "LOW"
+        description: "循環的依存は最小限に抑えられています"
+
+    high_coupling:
+      - component: "TodoController"
+        score: 0.85
+        description: "トランザクション処理と楽観的ロックによる複雑性"
+
+    inconsistent_service_usage:
+      - components: ["TagController"]
+        severity: "MEDIUM"
+        description: "サービス層の未使用（ただし、現状の実装は比較的シンプル）"
+
+    performance_concerns:
+      - component: "DashboardService"
+        severity: "LOW"
+        description: "クエリ最適化が実装済み、さらなる改善の余地あり"
+
+  recommendations:
+    - title: "TagServiceの導入検討"
+      priority: "LOW"
+      description: "現状の実装は十分シンプルですが、将来の拡張性を考慮して検討"
+      affected_components: ["TagController"]
+      
+    - title: "トランザクション処理の抽象化"
+      priority: "HIGH"
+      description: "TodoControllerの楽観的ロック処理を共通化"
+      affected_components: ["TodoController"]
+      
+    - title: "バリデーション処理の統合"
+      priority: "MEDIUM"
+      description: "TodoServiceのバリデーションロジックを専用クラスに分離"
+      affected_components: ["TodoService"]
+      
+    - title: "キャッシュ戦略の段階的導入"
+      priority: "LOW"
+      description: "現状の最適化を維持しつつ、必要に応じてキャッシュを導入"
+      affected_components: ["DashboardService"]
+
+    - title: "イベントシステムの活用"
+      priority: "LOW"
+      description: "結合度の低減と機能拡張の容易化のため"
+      affected_components: ["TodoController", "TagController"]
+
+    - title: "認証・認可の一元管理"
+      priority: "MEDIUM"
+      description: "ポリシーとミドルウェアの統一的な適用方法の確立"
+      affected_components: ["TodoController", "TagController", "AuthController"] 
